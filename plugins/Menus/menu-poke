@@ -3,26 +3,53 @@ import fs from 'fs'
 import path from 'path'
 import fetch from 'node-fetch'
 
+async function getRcanal() {
+    try {
+        const thumb = await (await fetch(global.icono)).buffer()
+        return {
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
+                serverMessageId: '',
+                newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
+            },
+            externalAdReply: {
+                title: global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ',
+                body: global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ',
+                mediaType: 1,
+                mediaUrl: global.redes,
+                sourceUrl: global.redes,
+                thumbnail: thumb,
+                showAdAttribution: false,
+                containsAutoReply: true,
+                renderLargerThumbnail: true
+            }
+        }
+    } catch { return {} }
+}
+
 let handler = async (m, { conn, usedPrefix }) => {
-  // ========== SISTEMA DE INFO Y CONFIG SUBBOT ==========
-  const totalUsers = Object.keys(global.db?.data?.users || {}).length || 0
-  const totalCommands = Object.values(global.plugins || {}).filter(v => v.help && v.tags).length || 0
-  const isSubBot = conn.user?.jid !== global.conn?.user?.jid
-  const botConfig = conn.subConfig || {}
+    const rcanal = await getRcanal()
+    
+    // ========== SISTEMA DE INFO Y CONFIG SUBBOT ==========
+    const totalUsers = Object.keys(global.db?.data?.users || {}).length || 0
+    const totalCommands = Object.values(global.plugins || {}).filter(v => v.help && v.tags).length || 0
+    const isSubBot = conn.user?.jid !== global.conn?.user?.jid
+    const botConfig = conn.subConfig || {}
 
-  const botName = botConfig.name || global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ'
-  const botPrefix = isSubBot ? (botConfig.prefix || '#') : (global.prefix?.source?.replace(/[^#!./-]/g, '') || '#')
-  const botMode = isSubBot ? (botConfig.mode || 'public') : 'private'
-  const version = global.vs || '1.5'
+    const botName = botConfig.name || global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ'
+    const botPrefix = isSubBot ? (botConfig.prefix || '#') : (global.prefix?.source?.replace(/[^#!./-]/g, '') || '#')
+    const botMode = isSubBot ? (botConfig.mode || 'public') : 'private'
+    const version = global.vs || '1.5'
 
-  let _uptime = process.uptime() * 1000
-  let uptime = clockString(_uptime)
+    let _uptime = process.uptime() * 1000
+    let uptime = clockString(_uptime)
 
-  let mentionedJid = await m.mentionedJid
-  let userId = mentionedJid && mentionedJid[0] ? mentionedJid[0] : m.sender
+    let mentionedJid = await m.mentionedJid
+    let userId = mentionedJid && mentionedJid[0] ? mentionedJid[0] : m.sender
 
-  // ========== TEXTO DEL MENÚ DE POKÉMON ==========
-  let txt = `> . ﹡ ﹟ 🎭 ׄ ⬭ *¡ʜᴏʟᴀ!* @${userId.split('@')[0]}
+    // ========== TEXTO DEL MENÚ DE POKÉMON ==========
+    let txt = `> . ﹡ ﹟ 🎭 ׄ ⬭ *¡ʜᴏʟᴀ!* @${userId.split('@')[0]}
 
 *ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜⚡* ㅤ֢ㅤ⸱ㅤᯭִ*
 ㅤ𓏸𓈒ㅤׄ *sᴏʏ* :: *${botName.toUpperCase()}*
@@ -72,57 +99,41 @@ let handler = async (m, { conn, usedPrefix }) => {
 
 > . ﹡ ﹟ ⚡ ׄ ⬭ *ᴀsᴛᴀ-ʙᴏᴛ-ᴍᴅ - ᴍᴏᴅᴏ ᴘᴏᴋéᴍᴏɴ*`.trim()
 
-  // ========== SISTEMA DE BANNER ==========
-  let thumbnail = null
+    // ========== SISTEMA DE BANNER ==========
+    let thumbnail = null
 
-  if (isSubBot && botConfig.logo) {
+    if (isSubBot && botConfig.logo) {
+        try {
+            const logoPath = path.resolve(botConfig.logo)
+            if (fs.existsSync(logoPath)) thumbnail = fs.readFileSync(logoPath)
+        } catch (e) {}
+    }
+
+    if (!thumbnail) {
+        let imageUrl = null
+        if (isSubBot && botConfig.logoUrl) imageUrl = botConfig.logoUrl
+        else if (global.icono) imageUrl = global.icono
+        else if (global.banner) imageUrl = global.banner
+        else imageUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwEyPc2ZcSJLv1nKjMoNcqTD_PZl1Zk9ujraVrJSEw_efKhnurC6XGA6VOj73W-ygzfgfou1-g_3EzCX41BCiLXPvTjcIUy4BL78F9l9MuQlWAIg4E3DjO-Kx-qO-yIIhkOyeYaqDeyx8MW4EusFhzDUqID_Pk2RRUWhDfHErCquK71DBo9v4BhRjtXBNt/s736/b63bb3b9-7464-494f-937f-9aa4394cb124.jpg'
+
+        try {
+            const response = await fetch(imageUrl)
+            if (response.ok) thumbnail = await response.buffer()
+        } catch (e) {}
+    }
+
+    // ========== ENVÍO CON SISTEMA RCANAL ==========
     try {
-      const logoPath = path.resolve(botConfig.logo)
-      if (fs.existsSync(logoPath)) thumbnail = fs.readFileSync(logoPath)
-    } catch (e) {}
-  }
-
-  if (!thumbnail) {
-    let imageUrl = null
-    if (isSubBot && botConfig.logoUrl) imageUrl = botConfig.logoUrl
-    else if (global.icono) imageUrl = global.icono
-    else if (global.banner) imageUrl = global.banner
-    else imageUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwEyPc2ZcSJLv1nKjMoNcqTD_PZl1Zk9ujraVrJSEw_efKhnurC6XGA6VOj73W-ygzfgfou1-g_3EzCX41BCiLXPvTjcIUy4BL78F9l9MuQlWAIg4E3DjO-Kx-qO-yIIhkOyeYaqDeyx8MW4EusFhzDUqID_Pk2RRUWhDfHErCquK71DBo9v4BhRjtXBNt/s736/b63bb3b9-7464-494f-937f-9aa4394cb124.jpg'
-
-    try {
-      const response = await fetch(imageUrl)
-      if (response.ok) thumbnail = await response.buffer()
-    } catch (e) {}
-  }
-
-  // ========== ENVÍO CON SISTEMA DE CANAL ==========
-  try {
-    await conn.sendMessage(m.chat, { 
-      text: txt,
-      contextInfo: {
-        mentionedJid: [userId],
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
-          serverMessageId: '',
-          newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
-        },
-        externalAdReply: {
-          title: botName,
-          body: global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ',
-          mediaType: 1,
-          mediaUrl: global.redes || global.channel,
-          sourceUrl: global.redes || global.channel,
-          thumbnail: thumbnail || await (await fetch(global.icono)).buffer(),
-          showAdAttribution: false,
-          containsAutoReply: true,
-          renderLargerThumbnail: true
-        }
-      }
-    }, { quoted: m })
-  } catch (e) {
-    await conn.reply(m.chat, txt, m)
-  }
+        await conn.sendMessage(m.chat, { 
+            text: txt,
+            contextInfo: {
+                mentionedJid: [userId],
+                ...rcanal
+            }
+        }, { quoted: m })
+    } catch (e) {
+        await conn.reply(m.chat, txt, m)
+    }
 }
 
 handler.help = ['pokemenu', 'pokem']
@@ -130,10 +141,10 @@ handler.tags = ['pokes']
 handler.command = ['pokemenu', 'pokem']
 
 function clockString(ms) {
-  let seconds = Math.floor((ms / 1000) % 60)
-  let minutes = Math.floor((ms / (1000 * 60)) % 60)
-  let hours = Math.floor((ms / (1000 * 60 * 60)) % 24)
-  return `${hours}h ${minutes}m ${seconds}s`
+    let seconds = Math.floor((ms / 1000) % 60)
+    let minutes = Math.floor((ms / (1000 * 60)) % 60)
+    let hours = Math.floor((ms / (1000 * 60 * 60)) % 24)
+    return `${hours}h ${minutes}m ${seconds}s`
 }
 
-export default handler
+export { handler as default }
