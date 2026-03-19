@@ -1,24 +1,53 @@
 // ============================================
-// plugins/gacha-favoritetop.js (ESTILO PREMIUM)
+// plugins/gacha-favoritetop.js (ESTILO ASTA-BOT)
 // ============================================
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
 
-const handler = async (m, { conn }) => {
+async function getRcanal() {
+    try {
+        const thumb = await (await fetch(global.icono)).buffer()
+        return {
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
+                serverMessageId: '',
+                newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
+            },
+            externalAdReply: {
+                title: global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ',
+                body: global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ',
+                mediaType: 1,
+                mediaUrl: global.redes,
+                sourceUrl: global.redes,
+                thumbnail: thumb,
+                showAdAttribution: false,
+                containsAutoReply: true,
+                renderLargerThumbnail: true
+            }
+        }
+    } catch { return {} }
+}
+
+const handler = async (m, { conn, usedPrefix }) => {
+    const rcanal = await getRcanal()
     const usersPath = path.join(process.cwd(), 'lib', 'gacha_users.json');
     const dbPath = path.join(process.cwd(), 'lib', 'characters.json');
-    
+
     if (!fs.existsSync(usersPath) || !fs.existsSync(dbPath)) {
-        return m.reply('❀ No hay datos disponibles.');
+        return conn.sendMessage(m.chat, {
+            text: `ׅㅤ𓏸𓈒ㅤׄ ❌ *sɪɴ ᴅᴀᴛᴏs* :: ɴᴏ ʜᴀʏ ɪɴғᴏʀᴍᴀᴄɪᴏ́ɴ ᴅɪsᴘᴏɴɪʙʟᴇ`,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
-    
+
     const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
     const characters = JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
-    
+
     // Contar favoritos por personaje
     const favCounts = {};
-    
+
     for (const [userId, userData] of Object.entries(users)) {
         if (userData.favorites && userData.favorites.length > 0) {
             userData.favorites.forEach(charId => {
@@ -26,7 +55,7 @@ const handler = async (m, { conn }) => {
             });
         }
     }
-    
+
     // Obtener información de personajes favoritos
     const favChars = [];
     for (const [charId, count] of Object.entries(favCounts)) {
@@ -38,45 +67,44 @@ const handler = async (m, { conn }) => {
             });
         }
     }
-    
+
     // Ordenar por cantidad de favoritos
     favChars.sort((a, b) => b.favCount - a.favCount);
-    
+
     const topFavs = favChars.slice(0, 20);
-    
+
     if (topFavs.length === 0) {
-        return m.reply('📭 *Aún no hay personajes favoritos.*');
+        return conn.sendMessage(m.chat, {
+            text: `ׅㅤ𓏸𓈒ㅤׄ 📭 *sɪɴ ғᴀᴠᴏʀɪᴛᴏs* :: ᴀᴜ́ɴ ɴᴏ ʜᴀʏ ᴡᴀɪғᴜs ғᴀᴠᴏʀɪᴛᴀs. ᴜsᴀ *${usedPrefix}fav* ᴘᴀʀᴀ ᴀɴ̃ᴀᴅɪʀ`,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
-    
-    // Construir lista
+
+    // Construir lista con estilo Asta-Bot
     let favList = '';
     topFavs.forEach((char, i) => {
         const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '•';
-        favList += `
-${medal} *${i + 1}.* *${char.name}*
-   📺 ${char.source}
-   ⭐ Favoritos: ${char.favCount}
-   💎 Valor: ${char.value}`;
+        favList += `\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ ${medal} *${i + 1}.* *${char.name}*\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ • 📺 ${char.source}\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ • ⭐ ${char.favCount} ғᴀᴠᴏʀɪᴛᴏs\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ • 💎 ${char.value}`;
     });
-    
-    // ========== TEXTO CON ESTILO PREMIUM ==========
-    const txt = `
-> . ﹡ ﹟ ⭐ ׄ ⬭ *ᴛᴏᴘ ғᴀᴠᴏʀɪᴛᴏs*
 
-*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜❤️* ㅤ֢ㅤ⸱ㅤᯭִ*
+    // ========== TEXTO CON ESTILO ASTA-BOT ==========
+    const txt = 
+        `> . ﹡ ﹟ ⭐ ׄ ⬭ *ᴛᴏᴘ ғᴀᴠᴏʀɪᴛᴏs*\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜❤️* ㅤ֢ㅤ⸱ㅤᯭִ*\n\n` +
+        `> ## \`ᴡᴀɪғᴜs ᴍᴀ́s ǫᴜᴇʀɪᴅᴀs 🥇\`\n\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴛᴏᴛᴀʟ* :: ${topFavs.length} ᴘᴇʀsᴏɴᴀᴊᴇs\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ʀᴀɴɢᴏ* :: ᴛᴏᴘ 20\n\n` +
+        `${favList}\n\n` +
+        `> . ﹡ ﹟ ⚡ ׄ ⬭ *ᴀsᴛᴀ-ʙᴏᴛ-ᴍᴅ*`;
 
-╭━━━━━━━━━━━━━━━━╮
-│  ⭐ *ᴡᴀɪғᴜs ᴍᴀ́s ǫᴜᴇʀɪᴅᴀs* ⭐
-╰━━━━━━━━━━━━━━━━╯
-
-📊 *ʟᴀs ᴍᴀ́s ᴀᴍᴀᴅᴀs ᴘᴏʀ ʟᴀ ᴄᴏᴍᴜɴɪᴅᴀᴅ*
-
-${favList}`.trim();
-
-    // ========== SISTEMA DE ENVÍO PREMIUM ==========
+    // ========== SISTEMA DE ENVÍO ASTA-BOT ==========
     const isSubBot = conn.user?.jid !== global.conn?.user?.jid;
     const botConfig = conn.subConfig || {};
-    
+
     // Imagen del #1 favorito
     const top1 = topFavs[0];
     let thumbnail = null;
@@ -86,7 +114,7 @@ ${favList}`.trim();
             if (response.ok) thumbnail = await response.buffer();
         } catch (e) {}
     }
-    
+
     if (!thumbnail) {
         let imageUrl = isSubBot && botConfig.logoUrl ? botConfig.logoUrl 
             : global.icono || global.banner 
@@ -101,27 +129,22 @@ ${favList}`.trim();
         await conn.sendMessage(m.chat, { 
             text: txt,
             contextInfo: {
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
-                    serverMessageId: '',
-                    newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
-                },
+                ...rcanal,
                 externalAdReply: {
-                    title: `⭐ Top Favoritos`,
-                    body: `🥇 ${top1?.name || 'N/A'} • ⭐ ${top1?.favCount || 0} favoritos`,
-                    mediaType: 1,
-                    mediaUrl: top1?.img?.[0] || global.icono,
-                    sourceUrl: global.redes || global.channel,
-                    thumbnail: thumbnail || await (await fetch(global.icono)).buffer(),
-                    showAdAttribution: false,
-                    containsAutoReply: true,
-                    renderLargerThumbnail: true
+                    ...rcanal.externalAdReply,
+                    title: `⭐ ᴛᴏᴘ ғᴀᴠᴏʀɪᴛᴏs`,
+                    body: `🥇 ${top1?.name || 'N/A'} • ⭐ ${top1?.favCount || 0} ғᴀᴠᴏʀɪᴛᴏs`,
+                    mediaUrl: top1?.img?.[0] || global.redes,
+                    thumbnail: thumbnail || rcanal.externalAdReply?.thumbnail
                 }
             }
         }, { quoted: m });
+        
     } catch (e) {
-        await conn.reply(m.chat, txt, m);
+        await conn.sendMessage(m.chat, {
+            text: txt,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
 };
 
