@@ -1,24 +1,54 @@
 // ============================================
-// plugins/gacha-buycharacter.js (ESTILO PREMIUM)
+// plugins/gacha-buycharacter.js (ESTILO ASTA-BOT)
 // ============================================
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
 
-const handler = async (m, { conn, text }) => {
-    if (!text) {
-        return m.reply('❌ *Uso correcto:* /buychar <nombre del personaje>');
-    }
+async function getRcanal() {
+    try {
+        const thumb = await (await fetch(global.icono)).buffer()
+        return {
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
+                serverMessageId: '',
+                newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
+            },
+            externalAdReply: {
+                title: global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ',
+                body: global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ',
+                mediaType: 1,
+                mediaUrl: global.redes,
+                sourceUrl: global.redes,
+                thumbnail: thumb,
+                showAdAttribution: false,
+                containsAutoReply: true,
+                renderLargerThumbnail: true
+            }
+        }
+    } catch { return {} }
+}
+
+const handler = async (m, { conn, text, usedPrefix }) => {
+    const rcanal = await getRcanal()
     
+    if (!text) {
+        return conn.sendMessage(m.chat, {
+            text: `ׅㅤ𓏸𓈒ㅤׄ ❗ *ᴜsᴏ* :: ${usedPrefix}buychar <ɴᴏᴍʙʀᴇ ᴅᴇʟ ᴘᴇʀsᴏɴᴀᴊᴇ>`,
+            contextInfo: rcanal
+        }, { quoted: m });
+    }
+
     const buyerId = m.sender;
     const usersPath = path.join(process.cwd(), 'lib', 'gacha_users.json');
     const dbPath = path.join(process.cwd(), 'lib', 'characters.json');
-    
+
     let users = {};
     if (fs.existsSync(usersPath)) {
         users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
     }
-    
+
     if (!users[buyerId]) {
         users[buyerId] = {
             harem: [],
@@ -28,12 +58,12 @@ const handler = async (m, { conn, text }) => {
             votes: {}
         };
     }
-    
+
     // Buscar personaje en venta
     let found = null;
     let sellerId = null;
     let sellerIndex = -1;
-    
+
     for (const [userId, userData] of Object.entries(users)) {
         if (userData.harem) {
             const index = userData.harem.findIndex(c => 
@@ -47,21 +77,30 @@ const handler = async (m, { conn, text }) => {
             }
         }
     }
-    
+
     if (!found) {
-        return m.reply('❌ *No se encontró ese personaje en venta.*');
+        return conn.sendMessage(m.chat, {
+            text: `ׅㅤ𓏸𓈒ㅤׄ ❌ *ɴᴏ ᴇɴᴄᴏɴᴛʀᴀᴅᴏ* :: ᴇsᴇ ᴘᴇʀsᴏɴᴀᴊᴇ ɴᴏ ᴇsᴛᴀ́ ᴇɴ ᴠᴇɴᴛᴀ`,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
-    
+
     if (sellerId === buyerId) {
-        return m.reply('❌ *No puedes comprar tu propio personaje.*');
+        return conn.sendMessage(m.chat, {
+            text: `ׅㅤ𓏸𓈒ㅤׄ ❌ *ᴇʀʀᴏʀ* :: ɴᴏ ᴘᴜᴇᴅᴇs ᴄᴏᴍᴘʀᴀʀ ᴛᴜ ᴘʀᴏᴘɪᴏ ᴘᴇʀsᴏɴᴀᴊᴇ`,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
-    
+
     // Verificar si ya tiene el personaje
     const alreadyHas = users[buyerId].harem.find(c => c.id === found.id);
     if (alreadyHas) {
-        return m.reply('⚠️ *Ya tienes este personaje en tu harem.*');
+        return conn.sendMessage(m.chat, {
+            text: `ׅㅤ𓏸𓈒ㅤׄ ⚠️ *ʏᴀ ᴛɪᴇɴᴇs* :: ᴇsᴛᴇ ᴘᴇʀsᴏɴᴀᴊᴇ ᴇɴ ᴛᴜ ʜᴀʀᴇᴍ`,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
-    
+
     // Verificar fondos
     if (!global.db.data.users[buyerId]) {
         global.db.data.users[buyerId] = { coin: 0, bank: 0 };
@@ -69,22 +108,25 @@ const handler = async (m, { conn, text }) => {
     if (!global.db.data.users[sellerId]) {
         global.db.data.users[sellerId] = { coin: 0, bank: 0 };
     }
-    
+
     const buyerCoins = global.db.data.users[buyerId].coin || 0;
-    
+
     if (buyerCoins < found.salePrice) {
-        return m.reply(`❌ *No tienes suficientes monedas.* Necesitas *¥${found.salePrice}* pero solo tienes *¥${buyyerCoins}*`);
+        return conn.sendMessage(m.chat, {
+            text: `ׅㅤ𓏸𓈒ㅤׄ ❌ *sɪɴ ғᴏɴᴅᴏs* :: ɴᴇᴄᴇsɪᴛᴀs *¥${found.salePrice}* ʏ sᴏʟᴏ ᴛɪᴇɴᴇs *¥${buyerCoins}*`,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
-    
+
     // Realizar transacción
     global.db.data.users[buyerId].coin -= found.salePrice;
     global.db.data.users[sellerId].coin += found.salePrice;
-    
+
     // Transferir personaje
     const charToTransfer = { ...found, forSale: false, salePrice: 0, claimedAt: Date.now() };
     users[buyerId].harem.push(charToTransfer);
     users[sellerId].harem.splice(sellerIndex, 1);
-    
+
     // Actualizar en DB principal
     const characters = JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
     const charIndex = characters.findIndex(c => c.id === found.id);
@@ -92,42 +134,29 @@ const handler = async (m, { conn, text }) => {
         characters[charIndex].user = buyerId;
         fs.writeFileSync(dbPath, JSON.stringify(characters, null, 2), 'utf-8');
     }
-    
+
     fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
-    
+
     const buyerName = await conn.getName(buyerId);
     const sellerName = await conn.getName(sellerId);
-    
-    // ========== TEXTO CON ESTILO PREMIUM ==========
-    const txt = `
-> . ﹡ ﹟ 💰 ׄ ⬭ *¡ᴄᴏᴍᴘʀᴀ ᴇxɪᴛᴏsᴀ!* @${buyerId.split('@')[0]}
 
-*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜💎* ㅤ֢ㅤ⸱ㅤᯭִ*
+    // ========== TEXTO CON ESTILO ASTA-BOT ==========
+    const txt = 
+        `> . ﹡ ﹟ 💰 ׄ ⬭ *¡ᴄᴏᴍᴘʀᴀ ᴇxɪᴛᴏsᴀ!* @${buyerId.split('@')[0]}\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜💎* ㅤ֢ㅤ⸱ㅤᯭִ*\n\n` +
+        `> ## \`ᴛʀᴀɴsᴀᴄᴄɪᴏ́ɴ ᴄᴏᴍᴘʟᴇᴛᴀᴅᴀ 💰\`\n\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴘᴇʀsᴏɴᴀᴊᴇ* :: ${found.name}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *sᴇʀɪᴇ* :: ${found.source}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴠᴀʟᴏʀ* :: ${found.value}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴘʀᴇᴄɪᴏ* :: ¥${found.salePrice}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴄᴏᴍᴘʀᴀᴅᴏʀ* :: ${buyerName}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴠᴇɴᴅᴇᴅᴏʀ* :: ${sellerName}\n\n` +
+        `> . ﹡ ﹟ ⚡ ׄ ⬭ *¡${found.name} ᴀʜᴏʀᴀ ᴇs ᴛᴜʏᴀ!*`;
 
-╭━━━━━━━━━━━━━━━━╮
-│  💰 *ᴛʀᴀɴsᴀᴄᴄɪᴏ́ɴ ᴄᴏᴍᴘʟᴇᴛᴀᴅᴀ* 💰
-╰━━━━━━━━━━━━━━━━╯
-
-┌─⊷ *ᴅᴇᴛᴀʟʟᴇs ᴅᴇ ʟᴀ ᴄᴏᴍᴘʀᴀ*
-│ 🎴 *ᴘᴇʀsᴏɴᴀᴊᴇ:* ${found.name}
-│ 📺 *sᴇʀɪᴇ:* ${found.source}
-│ 💎 *ᴠᴀʟᴏʀ:* ${found.value}
-│ 💰 *ᴘʀᴇᴄɪᴏ:* ¥${found.salePrice}
-└───────────────
-
-┌─⊷ *ᴘᴀʀᴛɪᴄɪᴘᴀɴᴛᴇs*
-│ 👤 *ᴄᴏᴍᴘʀᴀᴅᴏʀ:* ${buyerName}
-│ 🏷️ *ᴠᴇɴᴅᴇᴅᴏʀ:* ${sellerName}
-└───────────────
-
-> ## \`ғᴇʟɪᴄɪᴅᴀᴅᴇs 🎉\`
-
-*¡${found.name}* ᴀʜᴏʀᴀ ᴘᴇʀᴛᴇɴᴇᴄᴇ ᴀ ᴛᴜ ʜᴀʀᴇᴍ!`.trim();
-
-    // ========== SISTEMA DE ENVÍO PREMIUM ==========
+    // ========== SISTEMA DE ENVÍO ASTA-BOT ==========
     const isSubBot = conn.user?.jid !== global.conn?.user?.jid;
     const botConfig = conn.subConfig || {};
-    
+
     let thumbnail = null;
     if (found.img && found.img.length > 0) {
         try {
@@ -135,7 +164,7 @@ const handler = async (m, { conn, text }) => {
             if (response.ok) thumbnail = await response.buffer();
         } catch (e) {}
     }
-    
+
     if (!thumbnail) {
         let imageUrl = isSubBot && botConfig.logoUrl ? botConfig.logoUrl 
             : global.icono || 'https://i.ibb.co/0Q3J9XZ/file.jpg';
@@ -150,40 +179,44 @@ const handler = async (m, { conn, text }) => {
             text: txt,
             contextInfo: {
                 mentionedJid: [buyerId, sellerId],
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
-                    serverMessageId: '',
-                    newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
-                },
+                ...rcanal,
                 externalAdReply: {
-                    title: `💰 ${found.name} Adquirida`,
-                    body: `Comprada por ${buyerName} • ¥${found.salePrice}`,
-                    mediaType: 1,
-                    mediaUrl: found.img?.[0] || global.icono,
-                    sourceUrl: global.redes || global.channel,
-                    thumbnail: thumbnail || await (await fetch(global.icono)).buffer(),
-                    showAdAttribution: false,
-                    containsAutoReply: true,
-                    renderLargerThumbnail: true
+                    ...rcanal.externalAdReply,
+                    title: `💰 ${found.name} ᴀᴅǫᴜɪʀɪᴅᴀ`,
+                    body: `ᴄᴏᴍᴘʀᴀᴅᴀ ᴘᴏʀ ${buyerName} • ¥${found.salePrice}`,
+                    mediaUrl: found.img?.[0] || global.redes,
+                    thumbnail: thumbnail || rcanal.externalAdReply?.thumbnail
                 }
             }
         }, { quoted: m });
-        
+
         // Notificar al vendedor
+        const notifyTxt = 
+            `> . ﹡ ﹟ 💰 ׄ ⬭ *¡ᴠᴇɴᴛᴀ ʀᴇᴀʟɪᴢᴀᴅᴀ!*\n\n` +
+            `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜💎* ㅤ֢ㅤ⸱ㅤᯭִ*\n\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴄᴏᴍᴘʀᴀᴅᴏʀ* :: ${buyerName}\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴘᴇʀsᴏɴᴀᴊᴇ* :: ${found.name}\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴘʀᴇᴄɪᴏ* :: ¥${found.salePrice}\n\n` +
+            `> . ﹡ ﹟ ⚡ ׄ ⬭ *ᴛᴜs ᴍᴏɴᴇᴅᴀs ʜᴀɴ sɪᴅᴏ ᴀᴄʀᴇᴅɪᴛᴀᴅᴀs*`;
+
         conn.sendMessage(sellerId, { 
-            text: `💰 *¡ᴠᴇɴᴛᴀ ʀᴇᴀʟɪᴢᴀᴅᴀ!*\n\n*${buyerName}* ʜᴀ ᴄᴏᴍᴘʀᴀᴅᴏ ᴛᴜ ᴘᴇʀsᴏɴᴀᴊᴇ *${found.name}* ᴘᴏʀ *¥${found.salePrice}*`,
+            text: notifyTxt,
             contextInfo: {
+                ...rcanal,
                 externalAdReply: {
-                    title: `💰 Venta Realizada`,
+                    ...rcanal.externalAdReply,
+                    title: `💰 ᴠᴇɴᴛᴀ ʀᴇᴀʟɪᴢᴀᴅᴀ`,
                     body: `${found.name} • ¥${found.salePrice}`,
-                    mediaType: 1,
                     thumbnail: thumbnail
                 }
             }
         });
+        
     } catch (e) {
-        await conn.reply(m.chat, txt, m);
+        await conn.sendMessage(m.chat, {
+            text: `ׅㅤ𓏸𓈒ㅤׄ ⚠️ *ᴇʀʀᴏʀ* :: ${e.message}\n\nׅㅤ𓏸𓈒ㅤׄ *ɪɴғᴏʀᴍᴀʀ* :: ᴜsᴀ *${usedPrefix}report* ᴘᴀʀᴀ ɪɴғᴏʀᴍᴀʀ ᴇʟ ᴘʀᴏʙʟᴇᴍᴀ`,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
 };
 
