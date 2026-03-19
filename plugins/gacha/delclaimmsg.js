@@ -1,46 +1,68 @@
 // ============================================
-// plugins/gacha-delclaimmsg.js (ESTILO PREMIUM)
+// plugins/gacha-delclaimmsg.js (ESTILO ASTA-BOT)
 // ============================================
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
 
-const handler = async (m, { conn }) => {
+async function getRcanal() {
+    try {
+        const thumb = await (await fetch(global.icono)).buffer()
+        return {
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
+                serverMessageId: '',
+                newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
+            },
+            externalAdReply: {
+                title: global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ',
+                body: global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ',
+                mediaType: 1,
+                mediaUrl: global.redes,
+                sourceUrl: global.redes,
+                thumbnail: thumb,
+                showAdAttribution: false,
+                containsAutoReply: true,
+                renderLargerThumbnail: true
+            }
+        }
+    } catch { return {} }
+}
+
+const handler = async (m, { conn, usedPrefix }) => {
+    const rcanal = await getRcanal()
     const userId = m.sender;
     const usersPath = path.join(process.cwd(), 'lib', 'gacha_users.json');
-    
+
     let users = {};
     if (fs.existsSync(usersPath)) {
         users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
     }
-    
+
     if (!users[userId]) {
-        return m.reply('❌ *No tienes un perfil creado.*');
+        return conn.sendMessage(m.chat, {
+            text: `ׅㅤ𓏸𓈒ㅤׄ ❌ *sɪɴ ᴘᴇʀғɪʟ* :: ɴᴏ ᴛɪᴇɴᴇs ᴜɴ ᴘᴇʀғɪʟ ᴄʀᴇᴀᴅᴏ. ᴜsᴀ *${usedPrefix}roll* ᴘᴀʀᴀ ᴇᴍᴘᴇᴢᴀʀ`,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
-    
+
     users[userId].claimMessage = '✧ {user} ha reclamado a {character}!';
     fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
-    
-    // ========== TEXTO CON ESTILO PREMIUM ==========
-    const txt = `
-> . ﹡ ﹟ 🔄 ׄ ⬭ *ᴍᴇɴsᴀᴊᴇ ʀᴇsᴛᴀʙʟᴇᴄɪᴅᴏ* @${userId.split('@')[0]}
 
-*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜🔄* ㅤ֢ㅤ⸱ㅤᯭִ*
+    // ========== TEXTO CON ESTILO ASTA-BOT ==========
+    const txt = 
+        `> . ﹡ ﹟ 🔄 ׄ ⬭ *ᴍᴇɴsᴀᴊᴇ ʀᴇsᴛᴀʙʟᴇᴄɪᴅᴏ* @${userId.split('@')[0]}\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜🔄* ㅤ֢ㅤ⸱ㅤᯭִ*\n\n` +
+        `> ## \`ᴄᴏɴғɪɢᴜʀᴀᴄɪᴏ́ɴ ᴘᴏʀ ᴅᴇғᴇᴄᴛᴏ ✅\`\n\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴇɴsᴀᴊᴇ* :: ✧ {user} ha reclamado a {character}!\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: ʀᴇsᴛᴀʙʟᴇᴄɪᴅᴏ ᴘᴏʀ ᴅᴇғᴇᴄᴛᴏ\n\n` +
+        `> . ﹡ ﹟ ⚡ ׄ ⬭ *ᴛᴜ ᴍᴇɴsᴀᴊᴇ ᴅᴇ ᴄʟᴀɪᴍ ʜᴀ sɪᴅᴏ ʀᴇsᴛᴀʙʟᴇᴄɪᴅᴏ*`;
 
-╭━━━━━━━━━━━━━━━━╮
-│  🔄 *ᴄᴏɴғɪɢᴜʀᴀᴄɪᴏ́ɴ ᴘᴏʀ ᴅᴇғᴇᴄᴛᴏ* 🔄
-╰━━━━━━━━━━━━━━━━╯
-
-> ## \`ᴍᴇɴsᴀᴊᴇ ᴘʀᴇᴅᴇᴛᴇʀᴍɪɴᴀᴅᴏ ✅\`
-
-*✧ {user} ha reclamado a {character}!*
-
-*ᴛᴜ ᴍᴇɴsᴀᴊᴇ ᴅᴇ ᴄʟᴀɪᴍ ʜᴀ sɪᴅᴏ ʀᴇsᴛᴀʙʟᴇᴄɪᴅᴏ ᴀʟ ᴠᴀʟᴏʀ ᴘᴏʀ ᴅᴇғᴇᴄᴛᴏ.*`.trim();
-
-    // ========== SISTEMA DE ENVÍO PREMIUM ==========
+    // ========== SISTEMA DE ENVÍO ASTA-BOT ==========
     const isSubBot = conn.user?.jid !== global.conn?.user?.jid;
     const botConfig = conn.subConfig || {};
-    
+
     let thumbnail = null;
     let imageUrl = isSubBot && botConfig.logoUrl ? botConfig.logoUrl 
         : global.icono || 'https://i.ibb.co/0Q3J9XZ/file.jpg';
@@ -54,27 +76,21 @@ const handler = async (m, { conn }) => {
             text: txt,
             contextInfo: {
                 mentionedJid: [userId],
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
-                    serverMessageId: '',
-                    newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
-                },
+                ...rcanal,
                 externalAdReply: {
-                    title: `🔄 Mensaje Restablecido`,
-                    body: `Configuración por defecto aplicada`,
-                    mediaType: 1,
-                    mediaUrl: global.icono,
-                    sourceUrl: global.redes || global.channel,
-                    thumbnail: thumbnail || await (await fetch(global.icono)).buffer(),
-                    showAdAttribution: false,
-                    containsAutoReply: true,
-                    renderLargerThumbnail: true
+                    ...rcanal.externalAdReply,
+                    title: `🔄 ᴍᴇɴsᴀᴊᴇ ʀᴇsᴛᴀʙʟᴇᴄɪᴅᴏ`,
+                    body: `ᴄᴏɴғɪɢᴜʀᴀᴄɪᴏ́ɴ ᴘᴏʀ ᴅᴇғᴇᴄᴛᴏ ᴀᴘʟɪᴄᴀᴅᴀ`,
+                    thumbnail: thumbnail || rcanal.externalAdReply?.thumbnail
                 }
             }
         }, { quoted: m });
+        
     } catch (e) {
-        await conn.reply(m.chat, txt, m);
+        await conn.sendMessage(m.chat, {
+            text: txt,
+            contextInfo: rcanal
+        }, { quoted: m });
     }
 };
 
