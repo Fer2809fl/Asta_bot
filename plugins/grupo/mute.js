@@ -2,12 +2,21 @@ var handler = async (m, { conn, participants, usedPrefix, command, text }) => {
   let mentionedJid = m.mentionedJid || []
   let user = mentionedJid[0] || (m.quoted && m.quoted.sender) || null
 
-  if (!user) return conn.reply(m.chat, `❀ Debes mencionar a un usuario para silenciarlo.`, m)
+  if (!user) return conn.reply(m.chat, 
+    `> . ﹡ ﹟ 🔇 ׄ ⬭ *sɪʟᴇɴᴄɪᴀʀ ᴜsᴜᴀʀɪᴏ*\n\n` +
+    `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ⚠️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+    `ׅㅤ𓏸𓈒ㅤׄ *ᴜsᴏ* :: ${usedPrefix}${command} @usuario [tiempo]\n` +
+    `ׅㅤ𓏸𓈒ㅤׄ *ᴛɪᴇᴍᴘᴏ* :: [número][s/m/h/d]\n` +
+    `ׅㅤ𓏸𓈒ㅤׄ *ᴇᴊᴇᴍᴘʟᴏs* ::\n` +
+    `   • ${usedPrefix}${command} @usuario 10m\n` +
+    `   • ${usedPrefix}${command} @usuario 2h\n` +
+    `   • ${usedPrefix}${command} @usuario 1d\n` +
+    `   • ${usedPrefix}${command} @usuario (indefinido)`, m)
 
   // Extraer tiempo del comando
   let time = text.match(/(\d+)([smhd])/i)
   let duration = 0
-  let durationText = 'indefinidamente'
+  let durationText = '♾️ ɪɴᴅᴇғɪɴɪᴅᴀᴍᴇɴᴛᴇ'
 
   if (time) {
     let value = parseInt(time[1])
@@ -16,19 +25,19 @@ var handler = async (m, { conn, participants, usedPrefix, command, text }) => {
     switch(unit) {
       case 's':
         duration = value * 1000
-        durationText = `${value} segundo${value > 1 ? 's' : ''}`
+        durationText = `${value}s`
         break
       case 'm':
         duration = value * 60 * 1000
-        durationText = `${value} minuto${value > 1 ? 's' : ''}`
+        durationText = `${value}m`
         break
       case 'h':
         duration = value * 60 * 60 * 1000
-        durationText = `${value} hora${value > 1 ? 's' : ''}`
+        durationText = `${value}h`
         break
       case 'd':
         duration = value * 24 * 60 * 60 * 1000
-        durationText = `${value} día${value > 1 ? 's' : ''}`
+        durationText = `${value}d`
         break
     }
   }
@@ -39,13 +48,27 @@ var handler = async (m, { conn, participants, usedPrefix, command, text }) => {
     const ownerBot = global.owner[0][0] + '@s.whatsapp.net'
 
     // Verificaciones de seguridad
-    if (user === conn.user.jid) return conn.reply(m.chat, `ꕥ No puedo silenciar al bot.`, m)
-    if (user === ownerGroup) return conn.reply(m.chat, `ꕥ No puedo silenciar al propietario del grupo.`, m)
-    if (user === ownerBot) return conn.reply(m.chat, `ꕥ No puedo silenciar al propietario del bot.`, m)
+    if (user === conn.user.jid) return conn.reply(m.chat, 
+      `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴀᴄᴄɪᴏ́ɴ ɴᴏ ᴘᴇʀᴍɪᴛɪᴅᴀ*\n\n` +
+      `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🤖 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴏᴛɪᴠᴏ* :: No puedo silenciar al bot`, m)
+      
+    if (user === ownerGroup) return conn.reply(m.chat, 
+      `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴀᴄᴄɪᴏ́ɴ ɴᴏ ᴘᴇʀᴍɪᴛɪᴅᴀ*\n\n` +
+      `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 👑 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴏᴛɪᴠᴏ* :: No puedo silenciar al propietario del grupo`, m)
+      
+    if (user === ownerBot) return conn.reply(m.chat, 
+      `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴀᴄᴄɪᴏ́ɴ ɴᴏ ᴘᴇʀᴍɪᴛɪᴅᴀ*\n\n` +
+      `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🔒 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴏᴛɪᴠᴏ* :: No puedo silenciar al propietario del bot`, m)
 
     // Verificar si el usuario es admin
     const isAdmin = participants.find(p => p.id === user)?.admin
-    if (isAdmin) return conn.reply(m.chat, `ꕥ No puedo silenciar a un administrador del grupo.`, m)
+    if (isAdmin) return conn.reply(m.chat, 
+      `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴀᴄᴄɪᴏ́ɴ ɴᴏ ᴘᴇʀᴍɪᴛɪᴅᴀ*\n\n` +
+      `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🛡️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴏᴛɪᴠᴏ* :: No puedo silenciar a un administrador`, m)
 
     // Inicializar estructura de datos si no existe
     if (!global.db.data.chats) global.db.data.chats = {}
@@ -58,10 +81,18 @@ var handler = async (m, { conn, participants, usedPrefix, command, text }) => {
       const remainingTime = muteData.expiresAt ? Math.max(0, muteData.expiresAt - Date.now()) : null
       
       if (remainingTime === null) {
-        return conn.reply(m.chat, `ꕥ Este usuario ya está silenciado indefinidamente.`, m)
+        return conn.reply(m.chat, 
+          `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ʏᴀ sɪʟᴇɴᴄɪᴀᴅᴏ*\n\n` +
+          `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🔇 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ᴜsᴜᴀʀɪᴏ* :: @${user.split('@')[0]}\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: Ya está silenciado ♾️ indefinidamente`, m, { mentions: [user] })
       } else if (remainingTime > 0) {
         const timeLeft = formatTime(remainingTime)
-        return conn.reply(m.chat, `ꕥ Este usuario ya está silenciado. Tiempo restante: ${timeLeft}`, m)
+        return conn.reply(m.chat, 
+          `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ʏᴀ sɪʟᴇɴᴄɪᴀᴅᴏ*\n\n` +
+          `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ⏳ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ᴜsᴜᴀʀɪᴏ* :: @${user.split('@')[0]}\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ᴛɪᴇᴍᴘᴏ ʀᴇsᴛᴀɴᴛᴇ* :: ${timeLeft}`, m, { mentions: [user] })
       }
     }
 
@@ -75,8 +106,14 @@ var handler = async (m, { conn, participants, usedPrefix, command, text }) => {
     }
 
     // Mensaje de confirmación
-    await conn.reply(m.chat, `✓ Usuario @${user.split('@')[0]} ha sido silenciado ${durationText}.\n\n_No podrá enviar mensajes en este grupo._`, m, {
-      mentions: [user]
+    await conn.reply(m.chat, 
+      `> . ﹡ ﹟ 🔇 ׄ ⬭ *ᴜsᴜᴀʀɪᴏ sɪʟᴇɴᴄɪᴀᴅᴏ*\n\n` +
+      `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ✅ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴛᴀʀɢᴇᴛ* :: @${user.split('@')[0]}\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴜʀᴀᴄɪᴏ́ɴ* :: ${durationText}\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴀᴅᴍɪɴ* :: @${m.sender.split('@')[0]}\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: No podrá enviar mensajes en este grupo`, m, {
+      mentions: [user, m.sender]
     })
 
     // Si hay duración, programar unmute automático
@@ -84,7 +121,11 @@ var handler = async (m, { conn, participants, usedPrefix, command, text }) => {
       setTimeout(() => {
         if (global.db.data.chats[m.chat]?.mutes?.[user]) {
           delete global.db.data.chats[m.chat].mutes[user]
-          conn.reply(m.chat, `✓ El silencio de @${user.split('@')[0]} ha expirado.`, m, {
+          conn.reply(m.chat, 
+            `> . ﹡ ﹟ 🔊 ׄ ⬭ *sɪʟᴇɴᴄɪᴏ ᴇxᴘɪʀᴀᴅᴏ*\n\n` +
+            `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ⏰ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴜsᴜᴀʀɪᴏ* :: @${user.split('@')[0]}\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: El silencio ha expirado, ya puede hablar`, m, {
             mentions: [user]
           }).catch(() => null)
         }
@@ -93,13 +134,17 @@ var handler = async (m, { conn, participants, usedPrefix, command, text }) => {
 
   } catch (e) {
     console.error('Error en mute:', e)
-    conn.reply(m.chat, `⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${e.message}`, m)
+    conn.reply(m.chat, 
+      `> . ﹡ ﹟ ❌ ׄ ⬭ *ᴇʀʀᴏʀ*\n\n` +
+      `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ⚠️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: ${e.message}\n\n` +
+      `> ✦ *ʀᴇᴘᴏʀᴛᴀʀ* :: ${usedPrefix}report`, m)
   }
 }
 
 // Función auxiliar para formatear tiempo
 function formatTime(ms) {
-  if (ms < 1000) return '0 segundos'
+  if (ms < 1000) return '0s'
   
   const seconds = Math.floor((ms / 1000) % 60)
   const minutes = Math.floor((ms / (1000 * 60)) % 60)
@@ -107,12 +152,12 @@ function formatTime(ms) {
   const days = Math.floor(ms / (1000 * 60 * 60 * 24))
   
   const parts = []
-  if (days > 0) parts.push(`${days} día${days > 1 ? 's' : ''}`)
-  if (hours > 0) parts.push(`${hours} hora${hours > 1 ? 's' : ''}`)
-  if (minutes > 0) parts.push(`${minutes} minuto${minutes > 1 ? 's' : ''}`)
-  if (seconds > 0) parts.push(`${seconds} segundo${seconds > 1 ? 's' : ''}`)
+  if (days > 0) parts.push(`${days}d`)
+  if (hours > 0) parts.push(`${hours}h`)
+  if (minutes > 0) parts.push(`${minutes}m`)
+  if (seconds > 0) parts.push(`${seconds}s`)
   
-  return parts.join(', ')
+  return parts.join(' ') || '0s'
 }
 
 handler.help = ['mute <@user> [tiempo]']
