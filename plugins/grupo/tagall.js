@@ -1,12 +1,22 @@
 const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, command }) => {
-const pesan = args.join` `
-const oi = `*» INFO :* ${pesan}`
-let teks = `*!  MENCION GENERAL  !*\n  *PARA ${participants.length} MIEMBROS* 🗣️\n\n ${oi}\n\n╭  ┄ 𝅄 ۪꒰ \`⡞᪲=͟͟͞${botname}≼᳞ׄ\` ꒱ ۟ 𝅄 ┄\n`
-for (const mem of participants) {
-teks += `┊ꕥ @${mem.id.split('@')[0]}\n`
-}
-teks += `╰⸼ ┄ ┄ ┄ ─  ꒰  ׅ୭ *${vs}* ୧ ׅ ꒱  ┄  ─ ┄⸼`
-conn.sendMessage(m.chat, { text: teks, mentions: participants.map((a) => a.id) })
+    const pesan = args.join` `
+    const oi = pesan || 'Sin mensaje especificado'
+    
+    let teks = 
+        `> . ﹡ ﹟ 📢 ׄ ⬭ *ᴍᴇɴᴄɪᴏ́ɴ ɢᴇɴᴇʀᴀʟ*\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🗣️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴛᴀʀɢᴇᴛ* :: ${participants.length} miembros\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴇɴsᴀᴊᴇ* :: ${oi}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴀᴅᴍɪɴ* :: @${m.sender.split('@')[0]}\n\n` +
+        `> ✦ *ʟɪsᴛᴀ ᴅᴇ ᴍɪᴇᴍʙʀᴏs* ::\n\n`
+    
+    for (const mem of participants) {
+        teks += `ׅㅤ𓏸𓈒ㅤׄ 👤 @${mem.id.split('@')[0]}\n`
+    }
+    
+    teks += `\n> ✧ *${global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ'}* :: ${global.vs || 'v1.0.0'}`
+
+    conn.sendMessage(m.chat, { text: teks, mentions: participants.map((a) => a.id) })
 }
 
 handler.help = ['todos']
