@@ -5,18 +5,20 @@ const handler = async (m, { conn, usedPrefix, command }) => {
     
     // Verificar si hay dueños configurados
     if (!ownersList || ownersList.length === 0) {
-      return await conn.reply(m.chat, '🚫 No hay dueños configurados en el bot.', m);
+      return await conn.reply(m.chat, 
+        `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴇʀʀᴏʀ*\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🚫 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: No hay dueños configurados en el bot`, m);
     }
 
     // Obtener información adicional de los archivos
-    const botName = global.botname || '『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』';
-    const devName = global.dev || 'Powered By 𝕱𝖊𝖗𝖓𝖆𝖓𝖉𝖔';
+    const botName = global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ';
+    const devName = global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ';
     const githubLink = global.github || 'https://github.com/Fer280809/Asta-bot';
     const gmail = global.gmail || 'fer2809fl@gmail.com';
 
     // Función para normalizar la entrada de dueños
     const normalizeOwner = (ownerEntry, index) => {
-      // Si es un array [número, nombre, ...otros datos]
       if (Array.isArray(ownerEntry)) {
         const [number, name, role, region, email, note] = ownerEntry;
         return {
@@ -25,18 +27,17 @@ const handler = async (m, { conn, usedPrefix, command }) => {
           role: role || (index === 0 ? 'Creador Principal' : 'Desarrollador'),
           region: region || 'México',
           email: email || gmail,
-          note: note || (index === 0 ? '💎 Desarrollador principal de Asta Bot' : '🌟 Soporte y desarrollo')
+          note: note || (index === 0 ? 'Desarrollador principal de Asta Bot' : 'Soporte y desarrollo')
         };
       }
       
-      // Si es solo un string (número)
       return {
         number: ownerEntry,
-        name: index === 0 ? (global.etiqueta || 'Fernando') + ' 🐺' : `Colaborador ${index + 1}`,
+        name: index === 0 ? (global.etiqueta || 'Fernando') : `Colaborador ${index + 1}`,
         role: index === 0 ? 'Creador Principal' : 'Desarrollador',
         region: 'México',
         email: gmail,
-        note: index === 0 ? '💎 Desarrollador principal de Asta Bot' : '🌟 Soporte y desarrollo'
+        note: index === 0 ? 'Desarrollador principal de Asta Bot' : 'Soporte y desarrollo'
       };
     };
 
@@ -80,18 +81,17 @@ END:VCARD`.trim();
 
       const vcard = generateVCard(contact);
       
-      const mensaje = `╭━─━─━─≪°◆°≫─━─━─━╮
-┃     *${botName}*
-├─━─━─≪°◇°≫─━─━─━┤
-┃ *👑 ${contact.role}:* ${contact.name}
-┃ *📞 NÚMERO:* +${contact.number}
-┃ *📍 REGIÓN:* ${contact.region}
-┃ *📧 EMAIL:* ${contact.email}
-┃ *🌐 GITHUB:* ${contact.website}
-┃ *📝 NOTA:* ${contact.note}
-╰━─━─━─≪°◆°≫─━─━─━╯
-
-*👉 Contacto enviado como tarjeta digital.*`;
+      const mensaje = 
+        `> . ﹡ ﹟ 👑 ׄ ⬭ *ᴄᴏɴᴛᴀᴄᴛᴏ ᴅᴇ ᴅᴇsᴀʀʀᴏʟʟᴀᴅᴏʀ*\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 💎 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ɴᴏᴍʙʀᴇ* :: ${contact.name}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ʀᴏʟ* :: ${contact.role}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ɴᴜ́ᴍᴇʀᴏ* :: +${contact.number}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ʀᴇɢɪᴏ́ɴ* :: ${contact.region}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴇᴍᴀɪʟ* :: ${contact.email}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ɢɪᴛʜᴜʙ* :: ${contact.website}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ɴᴏᴛᴀ* :: ${contact.note}\n\n` +
+        `> ✦ *ᴛᴀʀᴊᴇᴛᴀ* :: Enviada como contacto digital`;
       
       await conn.reply(m.chat, mensaje, m);
       await conn.sendMessage(m.chat, {
@@ -106,27 +106,37 @@ END:VCARD`.trim();
       
     } else {
       // Mostrar lista de todos los dueños
-      let listaOwners = `╭━─━─━─≪°◆°≫─━─━─━╮
-┃   *DESARROLLADORES*   
-├─━─━─≪°◇°≫─━─━─━┤\n`;
+      let listaOwners = 
+        `> . ﹡ ﹟ 👥 ׄ ⬭ *ᴅᴇsᴀʀʀᴏʟʟᴀᴅᴏʀᴇs*\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🚀 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ʙᴏᴛ* :: ${botName}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴛᴏᴛᴀʟ* :: ${owners.length} desarrolladores\n\n` +
+        `> ✦ *ʟɪsᴛᴀ ᴅᴇ ᴅᴇsᴀʀʀᴏʟʟᴀᴅᴏʀᴇs* ::\n\n`;
       
       owners.forEach((owner, index) => {
-        listaOwners += `┃ *${index + 1}.* ${owner.name} - ${owner.role}\n`;
-        listaOwners += `┃   📞 +${owner.number}\n`;
-        if (index < owners.length - 1) listaOwners += `┃   ───────────\n`;
+        listaOwners += 
+          `> . ﹡ ﹟ ${index + 1} ׄ ⬭ *${owner.role}*\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ɴᴏᴍʙʀᴇ* :: ${owner.name}\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ɴᴜ́ᴍᴇʀᴏ* :: +${owner.number}\n\n`;
       });
       
-      listaOwners += `╰━─━─━─≪°◆°≫─━─━─━╯
-
-*🔹 Usa ${usedPrefix}${command} [número]* para obtener el contacto de un desarrollador específico.
-*🔸 Ejemplo:* ${usedPrefix}${command} 1`;
+      listaOwners += 
+        `> ✧ *ᴜsᴏ* :: ${usedPrefix}${command} [número]\n` +
+        `> ✦ *ᴇᴊᴇᴍᴘʟᴏ* :: ${usedPrefix}${command} 1`;
       
       await conn.reply(m.chat, listaOwners, m);
     }
     
   } catch (e) {
     console.error(e);
-    const errorMsg = `🚫 *Error*\n\n❌ No se pudo obtener la información del creador.\n\n🔹 *Posibles soluciones:*\n• Verifica tu conexión a internet\n• Intenta nuevamente\n• Contacta con soporte`;
+    const errorMsg = 
+      `> . ﹡ ﹟ ❌ ׄ ⬭ *ᴇʀʀᴏʀ*\n\n` +
+      `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ⚠️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: No se pudo obtener la información\n\n` +
+      `> ✦ *sᴏʟᴜᴄɪᴏɴᴇs* ::\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ • Verifica tu conexión a internet\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ • Intenta nuevamente\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ • Contacta con soporte`;
     await conn.reply(m.chat, errorMsg, m);
   }
 }
