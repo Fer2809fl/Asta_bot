@@ -9,9 +9,19 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     await conn.groupSettingUpdate(m.chat, isClose)
 
     if (isClose === 'not_announcement') {
-        m.reply(`✅ *¡El chat ha sido abierto!* ✅\nAhora todos los miembros pueden enviar mensajes 💬✨`)
+        m.reply(
+            `> . ﹡ ﹟ 🔓 ׄ ⬭ *ɢʀᴜᴘᴏ ᴀʙɪᴇʀᴛᴏ*\n\n` +
+            `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ✅ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: Chat abierto para todos\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴘᴇʀᴍɪsᴏs* :: Todos los miembros pueden enviar mensajes\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴀᴅᴍɪɴ* :: @${m.sender.split('@')[0]}`, m, { mentions: [m.sender] })
     } else if (isClose === 'announcement') {
-        m.reply(`🚨 *¡Modo solo admins activado!* 🚨\nSolo los administradores pueden enviar mensajes 🛡️`)
+        m.reply(
+            `> . ﹡ ﹟ 🔒 ׄ ⬭ *ᴍᴏᴅᴏ sᴏʟᴏ ᴀᴅᴍɪɴs*\n\n` +
+            `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🛡️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: Chat cerrado\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴘᴇʀᴍɪsᴏs* :: Solo administradores pueden enviar mensajes\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴀᴅᴍɪɴ* :: @${m.sender.split('@')[0]}`, m, { mentions: [m.sender] })
     }
 }
 
