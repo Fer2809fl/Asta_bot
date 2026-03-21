@@ -13,40 +13,52 @@ let handler = async (m, { conn }) => {
         { link: "https://chat.whatsapp.com/BfCKeP10yZZ9ancsGy1Eh9" }  // Grupo 10
     ];
 
-    let mensaje = `╔══❖ COMUNIDADES DE ${conn.user.name.toUpperCase()} ❖══╗\n`;
-    
+    let mensaje = 
+        `> . ﹡ ﹟ 🌐 ׄ ⬭ *ᴄᴏᴍᴜɴɪᴅᴀᴅᴇs*\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 👥 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ʙᴏᴛ* :: ${conn.user.name}\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴛᴏᴛᴀʟ* :: ${grupos.length} grupos\n\n` +
+        `> ✦ *ʟɪsᴛᴀ ᴅᴇ ɢʀᴜᴘᴏs* ::\n\n`;
+
     // Iteramos los links y sacamos info
     for (let i = 0; i < grupos.length; i++) {
         const g = grupos[i];
-        if (!g.link) continue; // Ignorar si no hay link
-        
+        if (!g.link) continue;
+
         try {
-            // Extraer el código del link
             const code = g.link.split('/').pop();
-            
-            // Obtener metadata del grupo
             const info = await conn.groupGetInviteInfo(code);
             
             const nombre = info.subject || 'Sin nombre';
             const participantes = info.size || 0;
             const descripcion = info.desc || '';
+
+            mensaje += 
+                `> . ﹡ ﹟ ${i + 1} ׄ ⬭ *ɢʀᴜᴘᴏ*\n` +
+                `ׅㅤ𓏸𓈒ㅤׄ *ɴᴏᴍʙʀᴇ* :: ${nombre}\n` +
+                `ׅㅤ𓏸𓈒ㅤׄ *ᴍɪᴇᴍʙʀᴏs* :: ${participantes}\n`;
             
-            mensaje += `│ ${i + 1}. ${nombre}\n`;
-            mensaje += `│ 🔗 ${g.link}\n`;
-            mensaje += `│ 👥 ${participantes} miembros\n`;
-            if (descripcion) mensaje += `│ 📝 ${descripcion.substring(0, 50)}${descripcion.length > 50 ? '...' : ''}\n`;
-            mensaje += `────────────────────────\n`;
+            if (descripcion) {
+                const descCorta = descripcion.substring(0, 40) + (descripcion.length > 40 ? '...' : '');
+                mensaje += `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇsᴄ* :: ${descCorta}\n`;
+            }
             
+            mensaje += `> ✦ *ʟɪɴᴋ* :: ${g.link}\n\n`;
+
         } catch (e) {
-            console.log(`❌ Error con link: ${g.link}`, e.message);
-            mensaje += `│ ${i + 1}. Link inválido o privado\n`;
-            mensaje += `│ 🔗 ${g.link}\n`;
-            mensaje += `────────────────────────\n`;
+            console.log(`Error con link: ${g.link}`, e.message);
+            mensaje += 
+                `> . ﹡ ﹟ ${i + 1} ׄ ⬭ *ɢʀᴜᴘᴏ*\n` +
+                `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: Link inválido o privado\n` +
+                `> ✦ *ʟɪɴᴋ* :: ${g.link}\n\n`;
         }
     }
-    
-    mensaje += `╚════════════════════════════════╝\n📌 ¡Únete a nuestras comunidades!`;
-    
+
+    mensaje += 
+        `> . ﹡ ﹟ 📌 ׄ ⬭ *ɪɴᴠɪᴛᴀᴄɪᴏ́ɴ*\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🤝 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴇɴsᴀᴊᴇ* :: ¡Únete a nuestras comunidades!`;
+
     await conn.sendMessage(m.chat, { text: mensaje }, { quoted: m });
 }
 
