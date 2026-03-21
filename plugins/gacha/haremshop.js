@@ -1,18 +1,18 @@
 // ============================================
-// plugins/gacha-haremshop.js (ESTILO ASTA-BOT - MÍNIMO)
+// plugins/gacha-haremshop.js (ESTILO PREMIUM)
 // ============================================
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
 
-const handler = async (m, { conn, args, usedPrefix }) => {
+const handler = async (m, { conn, args }) => {
     const usersPath = path.join(process.cwd(), 'lib', 'gacha_users.json');
-
+    
     let users = {};
     if (fs.existsSync(usersPath)) {
         users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
     }
-
+    
     // Obtener todos los personajes en venta
     let forSale = [];
     for (const [userId, userData] of Object.entries(users)) {
@@ -27,52 +27,56 @@ const handler = async (m, { conn, args, usedPrefix }) => {
             });
         }
     }
-
+    
     if (forSale.length === 0) {
-        return conn.sendMessage(m.chat, {
-            text: `ׅㅤ𓏸𓈒ㅤׄ 🏪 *ᴛɪᴇɴᴅᴀ ᴠᴀᴄɪ́ᴀ* :: ɴᴏ ʜᴀʏ ᴡᴀɪғᴜs ᴇɴ ᴠᴇɴᴛᴀ ᴀᴄᴛᴜᴀʟᴍᴇɴᴛᴇ`,
-            contextInfo: global.rcanal
-        }, { quoted: m });
+        return m.reply('🏪 *No hay personajes en venta actualmente.*');
     }
-
+    
     const page = parseInt(args[0]) || 1;
     const perPage = 10;
     const start = (page - 1) * perPage;
     const end = start + perPage;
     const totalPages = Math.ceil(forSale.length / perPage);
-
+    
     // Construir lista
     let shopList = '';
     for (let i = start; i < end && i < forSale.length; i++) {
         const char = forSale[i];
         const ownerName = await conn.getName(char.ownerId);
-        shopList += `\n` +
-            `ׅㅤ𓏸𓈒ㅤׄ ${i + 1}. *${char.name}*\n` +
-            `ׅㅤ𓏸𓈒ㅤׄ • 📺 ${char.source}\n` +
-            `ׅㅤ𓏸𓈒ㅤׄ • 💎 ᴠᴀʟᴏʀ: ${char.value}\n` +
-            `ׅㅤ𓏸𓈒ㅤׄ • 💰 ᴘʀᴇᴄɪᴏ: ¥${char.salePrice}\n` +
-            `ׅㅤ𓏸𓈒ㅤׄ • 👤 ᴠᴇɴᴅᴇᴅᴏʀ: ${ownerName}`;
+        shopList += `
+┌─⊷ ${i + 1}. *${char.name}*
+│ 📺 ${char.source}
+│ 💎 Valor: ${char.value}
+│ 💰 Precio: ¥${char.salePrice}
+│ 👤 Vendedor: ${ownerName}
+└───────────────`;
     }
-
-    // ========== TEXTO CON ESTILO ASTA-BOT ==========
+    
+    // ========== TEXTO CON ESTILO PREMIUM ==========
     const txt = `
 > . ﹡ ﹟ 🏪 ׄ ⬭ *ᴛɪᴇɴᴅᴀ ᴅᴇ ᴡᴀɪғᴜs*
 
 *ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜🛒* ㅤ֢ㅤ⸱ㅤᯭִ*
 
-> ## \`ᴍᴇʀᴄᴀᴅᴏ ᴅᴇ ᴘᴇʀsᴏɴᴀᴊᴇs 🏪\`
+╭━━━━━━━━━━━━━━━━╮
+│  🏪 *ᴍᴇʀᴄᴀᴅᴏ ᴅᴇ ᴘᴇʀsᴏɴᴀᴊᴇs* 🏪
+╰━━━━━━━━━━━━━━━━╯
 
-ׅㅤ𓏸𓈒ㅤׄ *ᴅɪsᴘᴏɴɪʙʟᴇs* :: ${forSale.length}
-ׅㅤ𓏸𓈒ㅤׄ *ᴘᴀ́ɢɪɴᴀ* :: ${page}/${totalPages}
+┌─⊷ *ᴇsᴛᴀᴅɪ́sᴛɪᴄᴀs*
+│ 📊 *ᴛᴏᴛᴀʟ:* ${forSale.length}
+│ 📄 *ᴘᴀ́ɢɪɴᴀ:* ${page}/${totalPages}
+└───────────────
 
 ${shopList}
 
-> . ﹡ ﹟ 💡 ׄ ⬭ *ᴜsᴀ ${usedPrefix}buychar <ɴᴏᴍʙʀᴇ> ᴘᴀʀᴀ ᴄᴏᴍᴘʀᴀʀ*`.trim();
+> ## \`ᴄᴏᴍᴏ ᴄᴏᴍᴘʀᴀʀ 💡\`
 
-    // ========== SISTEMA DE ENVÍO ASTA-BOT ==========
+💡 *Usa /buychar <nombre> para comprar*`.trim();
+
+    // ========== SISTEMA DE ENVÍO PREMIUM ==========
     const isSubBot = conn.user?.jid !== global.conn?.user?.jid;
     const botConfig = conn.subConfig || {};
-
+    
     // Imagen del primer personaje en venta
     const firstItem = forSale[0];
     let thumbnail = null;
@@ -82,7 +86,7 @@ ${shopList}
             if (response.ok) thumbnail = await response.buffer();
         } catch (e) {}
     }
-
+    
     if (!thumbnail) {
         let imageUrl = isSubBot && botConfig.logoUrl ? botConfig.logoUrl 
             : global.icono || global.banner 
@@ -97,10 +101,25 @@ ${shopList}
         await conn.sendMessage(m.chat, { 
             text: txt,
             contextInfo: {
-                ...global.rcanal
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
+                    serverMessageId: '',
+                    newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
+                },
+                externalAdReply: {
+                    title: `🏪 Tienda de Waifus`,
+                    body: `${forSale.length} personajes en venta`,
+                    mediaType: 1,
+                    mediaUrl: firstItem?.img?.[0] || global.icono,
+                    sourceUrl: global.redes || global.channel,
+                    thumbnail: thumbnail || await (await fetch(global.icono)).buffer(),
+                    showAdAttribution: false,
+                    containsAutoReply: true,
+                    renderLargerThumbnail: true
+                }
             }
         }, { quoted: m });
-        
     } catch (e) {
         await conn.reply(m.chat, txt, m);
     }
