@@ -47,11 +47,15 @@ export async function all(m, { conn }) {
           let timeLeft = ''
           if (muteData.expiresAt) {
             const remaining = muteData.expiresAt - now
-            timeLeft = `\nTiempo restante: ${formatTime(remaining)}`
+            timeLeft = `\n> ✧ *ᴛɪᴇᴍᴘᴏ ʀᴇsᴛᴀɴᴛᴇ* :: ${formatTime(remaining)}`
           }
           
           await conn.sendMessage(m.chat, {
-            text: `@${m.sender.split('@')[0]} está silenciado y no puede enviar mensajes.${timeLeft}`,
+            text: 
+              `> . ﹡ ﹟ 🔇 ׄ ⬭ *ᴜsᴜᴀʀɪᴏ sɪʟᴇɴᴄɪᴀᴅᴏ*\n\n` +
+              `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🚫 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+              `ׅㅤ𓏸𓈒ㅤׄ *ᴜsᴜᴀʀɪᴏ* :: @${m.sender.split('@')[0]}\n` +
+              `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: No puede enviar mensajes${timeLeft}`,
             mentions: [m.sender]
           }, { quoted: null }).catch(() => null)
           
