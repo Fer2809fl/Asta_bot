@@ -2,7 +2,10 @@ var handler = async (m, { conn }) => {
   try {
     // Verificar estructura de datos
     if (!global.db.data.chats?.[m.chat]?.mutes) {
-      return conn.reply(m.chat, '✓ No hay usuarios silenciados en este grupo.', m)
+      return conn.reply(m.chat, 
+        `> . ﹡ ﹟ ✅ ׄ ⬭ *ʟɪsᴛᴀ ᴅᴇ sɪʟᴇɴᴄɪᴀᴅᴏs*\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 📭 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: No hay usuarios silenciados en este grupo`, m)
     }
     
     const chatMutes = global.db.data.chats[m.chat].mutes
@@ -21,10 +24,18 @@ var handler = async (m, { conn }) => {
     const currentMuted = Object.keys(chatMutes)
     
     if (currentMuted.length === 0) {
-      return conn.reply(m.chat, '✓ No hay usuarios silenciados en este grupo.', m)
+      return conn.reply(m.chat, 
+        `> . ﹡ ﹟ ✅ ׄ ⬭ *ʟɪsᴛᴀ ᴅᴇ sɪʟᴇɴᴄɪᴀᴅᴏs*\n\n` +
+        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 📭 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: No hay usuarios silenciados en este grupo`, m)
     }
     
-    let list = '📋 *USUARIOS SILENCIADOS*\n\n'
+    let list = 
+      `> . ﹡ ﹟ 🔇 ׄ ⬭ *ᴜsᴜᴀʀɪᴏs sɪʟᴇɴᴄɪᴀᴅᴏs*\n\n` +
+      `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 📋 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴛᴏᴛᴀʟ* :: ${currentMuted.length} usuarios\n\n` +
+      `> ✦ *ʟɪsᴛᴀ* ::\n\n`
+    
     for (let user of currentMuted) {
       const data = chatMutes[user]
       const name = data.name || user.split('@')[0]
@@ -33,18 +44,31 @@ var handler = async (m, { conn }) => {
       
       if (data.expiresAt) {
         const expiresIn = data.expiresAt - now
-        const timeLeft = expiresIn > 0 ? `Expira en: ${formatTime(expiresIn)}` : 'Expirado'
-        list += `• @${user.split('@')[0]} (${name})\n  └ ${timeLeft}\n  └ Silenciado por: ${mutedBy}\n  └ Fecha: ${mutedAt}\n\n`
+        const timeLeft = expiresIn > 0 ? `⏳ ${formatTime(expiresIn)}` : '⭕ Expirado'
+        list += 
+          `> . ﹡ ﹟ 🔇 ׄ ⬭ *ᴜsᴜᴀʀɪᴏ*\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ɴᴏᴍʙʀᴇ* :: @${user.split('@')[0]} (${name})\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ᴛɪᴇᴍᴘᴏ* :: ${timeLeft}\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *sɪʟᴇɴᴄɪᴀᴅᴏ ᴘᴏʀ* :: ${mutedBy}\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ғᴇᴄʜᴀ* :: ${mutedAt}\n\n`
       } else {
-        list += `• @${user.split('@')[0]} (${name})\n  └ Silenciado indefinidamente\n  └ Silenciado por: ${mutedBy}\n  └ Fecha: ${mutedAt}\n\n`
+        list += 
+          `> . ﹡ ﹟ 🔇 ׄ ⬭ *ᴜsᴜᴀʀɪᴏ*\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ɴᴏᴍʙʀᴇ* :: @${user.split('@')[0]} (${name})\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ᴛɪᴇᴍᴘᴏ* :: ♾️ Indefinido\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *sɪʟᴇɴᴄɪᴀᴅᴏ ᴘᴏʀ* :: ${mutedBy}\n` +
+          `ׅㅤ𓏸𓈒ㅤׄ *ғᴇᴄʜᴀ* :: ${mutedAt}\n\n`
       }
     }
     
-    conn.reply(m.chat, list, m, { mentions: currentMuted })
+    conn.reply(m.chat, list.trim(), m, { mentions: currentMuted })
     
   } catch (e) {
     console.error('Error en mutelist:', e)
-    conn.reply(m.chat, '⚠︎ Error al obtener la lista de silenciados.', m)
+    conn.reply(m.chat, 
+      `> . ﹡ ﹟ ❌ ׄ ⬭ *ᴇʀʀᴏʀ*\n\n` +
+      `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ⚠️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+      `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: Error al obtener la lista de silenciados`, m)
   }
 }
 
