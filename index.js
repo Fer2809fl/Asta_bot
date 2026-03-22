@@ -296,6 +296,7 @@ async function filesInit() {
   console.log(chalk.bold.cyan('\n📦 Cargando plugins...'))
 
   let total = 0
+  let errors = 0
   
   for (const folder of pluginFolders) {
     const folderPath = join(__dirname, folder)
@@ -304,22 +305,34 @@ async function filesInit() {
     const pluginFiles = getPluginFiles(folderPath)
     
     for (const file of pluginFiles) {
+      const pluginKey = `${folder}/${file.relativePath}`
       try {
-        const module = await import(file.fullPath)
-        const pluginKey = `${folder}/${file.relativePath}`
-        global.plugins[pluginKey] = module.default || module
-        total++
+        // FIX WINDOWS: convertir ruta absoluta a file:// URL
+        const fileUrl = pathToFileURL(file.fullPath).href
+        const module = await import(fileUrl)
+        const plugin = module.default !== undefined ? module.default : module
+        if (plugin && (typeof plugin === 'function' || typeof plugin === 'object')) {
+          global.plugins[pluginKey] = plugin
+          total++
+        } else {
+          console.error(chalk.red(`✖ ${pluginKey}`) + chalk.gray(' (sin export válido)'))
+          errors++
+        }
       } catch (e) {
-        console.error(chalk.red(`✖ ${folder}/${file.relativePath}`))
+        console.error(chalk.red(`✖ ${pluginKey}`))
+        console.error(chalk.gray(`  → ${e.message}`))
+        errors++
       }
     }
     
     if (pluginFiles.length > 0) {
-      console.log(chalk.green(`✅ ${folder}: ${pluginFiles.length}`))
+      console.log(chalk.green(`✅ ${folder}: ${pluginFiles.length} archivos`))
     }
   }
 
-  console.log(chalk.bold.green(`\n✨ Total: ${total} plugins\n`))
+  console.log(chalk.bold.green(`\n✨ Total cargados: ${total} plugins`))
+  if (errors > 0) console.log(chalk.yellow(`⚠ Fallaron: ${errors} plugins`))
+  console.log()
 }
 
 filesInit().catch(console.error)
@@ -364,9 +377,13 @@ global.reload = async (_ev, filename) => {
       }
 
       try {
-        const module = await import(`${fileInfo.fullPath}?update=${Date.now()}`)
-        global.plugins[pluginKey] = module.default || module
+        // FIX WINDOWS: usar file:// URL
+        const fileUrl = pathToFileURL(fileInfo.fullPath).href + `?update=${Date.now()}`
+        const module = await import(fileUrl)
+        const plugin = module.default !== undefined ? module.default : module
+        global.plugins[pluginKey] = plugin
       } catch (e) {
+        console.error(chalk.red(`✖ Error recargando ${pluginKey}: ${e.message}`))
         delete global.plugins[pluginKey]
       }
       return
