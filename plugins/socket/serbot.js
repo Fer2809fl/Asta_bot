@@ -29,12 +29,13 @@ let rtx = `╭─〔 💻 𝘼𝙎𝙏𝘼 𝘽𝙊𝙏 • 𝙈𝙊𝘿𝙊 �
 let rtx2 = `╭─[ 💻 𝘼𝙎𝙏𝘼 𝘽𝙊𝙏 • 𝙈𝙊𝘿𝙊 𝘾𝙊𝘿𝙀 ]─╮
 │
 │  🧠  Este es el *Modo CODE* de Asta Bot.
-│  Escanea el *QR* desde otro celular o PC
+│  Ingresa el código desde otro celular o PC
 │  para convertirte en un *Sub-Bot Temporal*.
 │
 │  1️⃣  Pulsa los ⋮ tres puntos arriba a la derecha
 │  2️⃣  Entra en *Dispositivos vinculados*
-│  3️⃣  Escanea el QR y ¡listo! ⚡
+│  3️⃣  Selecciona *Vincular con código de 8 dígitos*
+│  4️⃣  Ingresa el código que aparecerá a continuación
 │
 │  ⏳  *Expira en 45 segundos.*
 ╰────────────────────────╯`
@@ -46,7 +47,6 @@ if (!global.conns || !Array.isArray(global.conns)) {
 if (!global.activeSubBots) global.activeSubBots = new Map()
 if (!global.subBotsData) global.subBotsData = new Map()
 if (!global.subBotReconnectAttempts) global.subBotReconnectAttempts = new Map()
-// NUEVO: Map para controlar si ya se envió código/QR por usuario
 if (!global.sentCodes) global.sentCodes = new Map()
 
 // ============= FUNCIÓN PARA VERIFICAR CONEXIÓN =============
@@ -67,13 +67,104 @@ function isSubBotConnected(jid) {
     })
 }
 
+// ============= AUTO-INICIO AL ARRANCAR =============
+export async function autoStartSubBots() {
+    const subBotFolder = global.supConfig?.folder || global.jadi || 'Sessions/SubBot'
+    if (!fs.existsSync(subBotFolder)) return
+
+    const sessions = fs.readdirSync(subBotFolder).filter(f => {
+        const fullPath = path.join(subBotFolder, f)
+        return fs.statSync(fullPath).isDirectory() &&
+               fs.existsSync(path.join(fullPath, 'creds.json'))
+    })
+
+    if (!sessions.length) {
+        console.log(chalk.gray('📭 Sin subbots guardados.'))
+        return
+    }
+
+    console.log(chalk.cyan(`\n🔄 Restaurando ${sessions.length} subbot(s)...`))
+
+    for (const userId of sessions) {
+        try {
+            const sessionPath = path.join(subBotFolder, userId)
+            const configPath = path.join(sessionPath, 'config.json')
+            let savedConfig = {}
+            if (fs.existsSync(configPath)) {
+                savedConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+            }
+            await cleanSubBotCache(sessionPath)
+            console.log(chalk.blue(`  ↳ Iniciando: ${userId}`))
+            await AstaJadiBot({
+                pathAstaJadiBot: sessionPath,
+                m: null,
+                conn: global.conn,
+                args: [],
+                usedPrefix: global.prefox || '#',
+                command: 'qr',
+                userId,
+                maxReconnectAttempts: 5,
+                isReconnect: false,
+                isAutoStart: true,
+                savedConfig
+            })
+            await new Promise(r => setTimeout(r, 2000))
+        } catch (e) {
+            console.error(chalk.red(`  ✖ Error restaurando ${userId}: ${e.message}`))
+        }
+    }
+}
+
+// ============= LIMPIEZA DE CACHÉ =============
+export async function cleanSubBotCache(sessionPath) {
+    try {
+        const filesToClean = [
+            'pre-key-store.json', 'sender-key-store.json',
+            'session-store.json', 'app-state-sync-key-store.json'
+        ]
+        for (const file of filesToClean) {
+            const fp = path.join(sessionPath, file)
+            if (!fs.existsSync(fp)) continue
+            try {
+                const data = JSON.parse(fs.readFileSync(fp, 'utf-8'))
+                const cutoff = Date.now() - 48 * 60 * 60 * 1000
+                let changed = false
+                if (typeof data === 'object' && data !== null) {
+                    for (const key of Object.keys(data)) {
+                        if (data[key]?.timestamp && data[key].timestamp < cutoff) {
+                            delete data[key]; changed = true
+                        }
+                    }
+                    if (changed) fs.writeFileSync(fp, JSON.stringify(data))
+                }
+            } catch {}
+        }
+        const tmpFiles = fs.readdirSync(sessionPath)
+            .filter(f => f.endsWith('.tmp') || f.endsWith('.log') || f === 'store.json')
+        for (const f of tmpFiles) { try { fs.unlinkSync(path.join(sessionPath, f)) } catch {} }
+    } catch {}
+}
+
+// ============= LIMPIEZA PERIÓDICA =============
+export function startPeriodicCacheClean() {
+    const CACHE_CLEAN_INTERVAL = 20 * 60 * 1000
+    setInterval(async () => {
+        const subBotFolder = global.supConfig?.folder || global.jadi || 'Sessions/SubBot'
+        if (!fs.existsSync(subBotFolder)) return
+        const sessions = fs.readdirSync(subBotFolder)
+            .filter(f => fs.statSync(path.join(subBotFolder, f)).isDirectory())
+        for (const userId of sessions) {
+            try { await cleanSubBotCache(path.join(subBotFolder, userId)) } catch {}
+        }
+    }, CACHE_CLEAN_INTERVAL)
+}
+
 // ============= HANDLER PRINCIPAL =============
 let handler = async (m, { conn, args, usedPrefix, command }) => {
     if (!globalThis.db.data.settings[conn.user.jid].jadibotmd) {
         return m.reply(`ꕥ El Comando *${command}* está desactivado temporalmente.`)
     }
 
-    // Contar activos correctamente
     const activeSubBotsCount = global.conns.filter(sock => {
         try {
             return sock?.user?.jid && 
@@ -93,7 +184,6 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
         )
     }
 
-    // Cooldown
     const userData = global.db.data.users[m.sender]
     const lastSub = userData?.Subs || 0
     const timeLeft = 120000 - (Date.now() - lastSub)
@@ -114,22 +204,18 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
     const pathAstaJadiBot = path.join(`./${global.jadi || 'Sessions/SubBot'}/`, userId)
 
-    // Limpiar sesión anterior corrupta
     if (fs.existsSync(pathAstaJadiBot)) {
         try {
             fs.rmSync(pathAstaJadiBot, { recursive: true, force: true })
-            await delay(1000) // Esperar limpieza
+            await delay(1000)
         } catch (e) {
             console.error('Error limpiando sesión:', e)
         }
     }
 
     fs.mkdirSync(pathAstaJadiBot, { recursive: true })
-
-    // NUEVO: Resetear la bandera de código enviado al iniciar nueva solicitud
     global.sentCodes.delete(userId)
 
-    // Iniciar SubBot con manejo de reconexión
     await AstaJadiBot({
         pathAstaJadiBot,
         m,
@@ -138,7 +224,9 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
         usedPrefix,
         command,
         userId,
-        maxReconnectAttempts: 3
+        maxReconnectAttempts: 3,
+        isReconnect: false,
+        isAutoStart: false
     })
 
     global.db.data.users[m.sender].Subs = Date.now()
@@ -160,7 +248,9 @@ export async function AstaJadiBot(options) {
         command, 
         userId,
         maxReconnectAttempts = 3,
-        isReconnect = false 
+        isReconnect = false,
+        isAutoStart = false,
+        savedConfig = null
     } = options
 
     let reconnectAttempts = global.subBotReconnectAttempts.get(userId) || 0
@@ -172,41 +262,23 @@ export async function AstaJadiBot(options) {
 
         if (reconnectAttempts > maxReconnectAttempts) {
             console.log(chalk.red(`❌ Máximos reintentos alcanzados para ${userId}`))
-            await m.reply?.(`❌ No se pudo reconectar el SubBot después de ${maxReconnectAttempts} intentos. Elimina la sesión y vuelve a vincular.`)
+            if (m && !isAutoStart) {
+                await m.reply?.(`❌ No se pudo reconectar el SubBot después de ${maxReconnectAttempts} intentos. Elimina la sesión y vuelve a vincular.`)
+            }
             global.subBotReconnectAttempts.delete(userId)
             return cleanupSession(pathAstaJadiBot, userId)
         }
-
-        // Esperar antes de reconectar
         await delay(5000 * reconnectAttempts)
     }
 
-    // Configurar modo code
     if (command === 'code') {
         command = 'qr'
         args.unshift('code')
     }
 
     const mcode = args.some(arg => /^(--code|code)$/.test(arg?.trim()))
-
-    // Limpiar args de flags
     args = args.map(arg => arg.replace(/^--code$|^code$/, '').trim()).filter(Boolean)
 
-    // Cargar credenciales si se proporcionan en base64
-    const pathCreds = path.join(pathAstaJadiBot, "creds.json")
-
-    if (args[0] && !isReconnect) {
-        try {
-            const credsData = JSON.parse(Buffer.from(args[0], "base64").toString("utf-8"))
-            fs.writeFileSync(pathCreds, JSON.stringify(credsData, null, 2))
-            console.log(chalk.green('✅ Credenciales cargadas desde argumento'))
-        } catch (e) {
-            console.error('Error decodificando credenciales:', e)
-            return m.reply?.(`❌ Credenciales inválidas. Usa ${usedPrefix + command} sin argumentos.`)
-        }
-    }
-
-    // Configuración de Baileys
     const { version } = await fetchLatestBaileysVersion()
     const msgRetryCache = new NodeCache({ stdTTL: 0, checkperiod: 0 })
     const { state, saveCreds } = await useMultiFileAuthState(pathAstaJadiBot)
@@ -231,10 +303,6 @@ export async function AstaJadiBot(options) {
 
     let sock = makeWASocket(connectionOptions)
 
-    // Referencia estable para el socket
-    const sockRef = { current: sock }
-
-    // Configuración del SubBot
     const defaultConfig = {
         name: `SubBot-${userId}`,
         prefix: global.prefix?.toString() || '^[#./]',
@@ -242,17 +310,18 @@ export async function AstaJadiBot(options) {
         mode: 'public',
         antiPrivate: false,
         gponly: false,
-        owner: m.sender,
+        owner: m?.sender || null,
         createdAt: new Date().toISOString(),
         sessionPath: pathAstaJadiBot
     }
 
     const configPath = path.join(pathAstaJadiBot, 'config.json')
-
-    // Cargar o crear config
     let subBotConfig
+
     try {
-        if (fs.existsSync(configPath)) {
+        if (savedConfig && Object.keys(savedConfig).length > 0) {
+            subBotConfig = savedConfig
+        } else if (fs.existsSync(configPath)) {
             subBotConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
         } else {
             subBotConfig = defaultConfig
@@ -265,14 +334,11 @@ export async function AstaJadiBot(options) {
     sock.subConfig = subBotConfig
     sock.userId = userId
 
-    // Timers para limpieza
     let qrTimer = null
     let connectionTimer = null
     let messageRetryTimer = null
-    // NUEVO: Variable local para controlar si ya se envió código en esta instancia
     let codeSent = false
 
-    // Función de limpieza segura
     const cleanup = async (fullCleanup = false) => {
         if (qrTimer) clearTimeout(qrTimer)
         if (connectionTimer) clearTimeout(connectionTimer)
@@ -280,9 +346,7 @@ export async function AstaJadiBot(options) {
 
         try {
             sock.ev.removeAllListeners()
-            if (sock.ws?.readyState === 1) {
-                sock.ws.close()
-            }
+            if (sock.ws?.readyState === 1) sock.ws.close()
         } catch (e) {
             console.error('Error en cleanup:', e)
         }
@@ -290,20 +354,18 @@ export async function AstaJadiBot(options) {
         if (fullCleanup) {
             await cleanupSession(pathAstaJadiBot, userId)
             global.subBotReconnectAttempts.delete(userId)
-            // NUEVO: Limpiar bandera de código enviado al hacer cleanup completo
             global.sentCodes.delete(userId)
         }
     }
 
-    // Timer de espera inicial (solo si no es reconexión)
-    if (!isReconnect) {
+    if (!isReconnect && !isAutoStart) {
         connectionTimer = setTimeout(async () => {
             if (!sock.user) {
                 console.log(chalk.yellow(`⏰ Timeout de conexión para ${userId}`))
                 await cleanup(true)
                 await m.reply?.('⏰ Tiempo de espera agotado. Intenta nuevamente.')
             }
-        }, 120000) // 2 minutos para escanear
+        }, 120000)
     }
 
     // ============= MANEJO DE CONEXIÓN =============
@@ -314,15 +376,12 @@ export async function AstaJadiBot(options) {
             console.log(chalk.blue(`🆕 Nueva sesión detectada: ${userId}`))
         }
 
-        // Manejar QR - NUEVA LÓGICA: Solo enviar una vez
-        if (qr) {
-            // NUEVO: Verificar si ya se envió código/QR para este usuario
+        if (qr && !sock.user) {
             if (global.sentCodes.has(userId) || codeSent) {
                 console.log(chalk.yellow(`⚠️ Código/QR ya enviado previamente a ${userId}, ignorando...`))
                 return
             }
 
-            // Marcar como enviado tanto local como globalmente
             codeSent = true
             global.sentCodes.set(userId, {
                 timestamp: Date.now(),
@@ -330,34 +389,35 @@ export async function AstaJadiBot(options) {
             })
 
             if (mcode) {
-                // Modo código
+                // MODO CODE - SEPARADO: imagen primero, luego código
                 try {
                     const secret = await sock.requestPairingCode(userId)
                     const formattedCode = secret.match(/.{1,4}/g)?.join("-") || secret
 
+                    // 1. Enviar imagen con instrucciones
                     await conn.sendMessage(m.chat, {
                         image: { url: imagenSerBot },
-                        caption: rtx2
+                        caption: rtx2.trim()
                     }, { quoted: m })
 
-                    const codeMsg = await m.reply(`\`${formattedCode}\``)
+                    // 2. Enviar solo el código (sin preview)
+                    const codeMsg = await conn.sendMessage(m.chat, {
+                        text: `\`\`\`${formattedCode}\`\`\``
+                    }, { quoted: m })
 
-                    // Auto-eliminar código
                     setTimeout(() => {
-                        conn.sendMessage(m.sender, { delete: codeMsg.key }).catch(() => {})
-                        // NUEVO: Limpiar bandera después de 45 segundos para permitir nueva solicitud
+                        conn.sendMessage(m.chat, { delete: codeMsg.key }).catch(() => {})
                         global.sentCodes.delete(userId)
                     }, 45000)
 
                 } catch (e) {
                     console.error('Error pairing code:', e)
-                    // NUEVO: Si hay error, limpiar bandera para permitir reintento
                     global.sentCodes.delete(userId)
                     codeSent = false
                     await m.reply?.('❌ Error generando código. Intenta con QR: ' + usedPrefix + 'qr')
                 }
             } else {
-                // Modo QR
+                // MODO QR
                 try {
                     const qrBuffer = await qrcode.toBuffer(qr, { 
                         scale: 8, 
@@ -370,16 +430,13 @@ export async function AstaJadiBot(options) {
                         caption: rtx.trim()
                     }, { quoted: m })
 
-                    // Auto-eliminar QR
                     qrTimer = setTimeout(() => {
-                        conn.sendMessage(m.sender, { delete: qrMsg.key }).catch(() => {})
-                        // NUEVO: Limpiar bandera después de 45 segundos
+                        conn.sendMessage(m.chat, { delete: qrMsg.key }).catch(() => {})
                         global.sentCodes.delete(userId)
                     }, 45000)
 
                 } catch (e) {
                     console.error('Error generando QR:', e)
-                    // NUEVO: Si hay error, limpiar bandera
                     global.sentCodes.delete(userId)
                     codeSent = false
                 }
@@ -387,42 +444,25 @@ export async function AstaJadiBot(options) {
             return
         }
 
-        // Conexión exitosa
+        // ===== CONEXIÓN EXITOSA =====
         if (connection === 'open') {
-            // Limpiar timers
             if (connectionTimer) clearTimeout(connectionTimer)
             global.subBotReconnectAttempts.delete(userId)
-            // NUEVO: Limpiar bandera de código enviado al conectar exitosamente
             global.sentCodes.delete(userId)
 
-            // Guardar estado
             const sessionData = {
                 jid: sock.user.jid,
                 name: sock.user.name || 'SubBot',
                 userId: userId,
-                owner: m.sender,
+                owner: m?.sender || subBotConfig.owner,
                 connectedAt: new Date().toISOString(),
                 config: sock.subConfig
             }
+            fs.writeFileSync(path.join(pathAstaJadiBot, 'session.json'), JSON.stringify(sessionData, null, 2))
 
-            fs.writeFileSync(
-                path.join(pathAstaJadiBot, 'session.json'),
-                JSON.stringify(sessionData, null, 2)
-            )
+            if (!global.conns.includes(sock)) global.conns.push(sock)
+            global.activeSubBots.set(sock.user.jid, { socket: sock, userId, connectedAt: Date.now(), config: sock.subConfig })
 
-            // Registrar en globales
-            if (!global.conns.includes(sock)) {
-                global.conns.push(sock)
-            }
-
-            global.activeSubBots.set(sock.user.jid, {
-                socket: sock,
-                userId: userId,
-                connectedAt: Date.now(),
-                config: sock.subConfig
-            })
-
-            // Actualizar config con JID real
             sock.subConfig.jid = sock.user.jid
             sock.subConfig.updatedAt = new Date().toISOString()
             fs.writeFileSync(configPath, JSON.stringify(sock.subConfig, null, 2))
@@ -434,8 +474,7 @@ export async function AstaJadiBot(options) {
                 `└─ Path: ${pathAstaJadiBot}\n`
             ))
 
-            // Notificar solo en primera conexión (no en reconexiones)
-            if (!isReconnect && m?.chat) {
+            if (!isReconnect && !isAutoStart && m?.chat) {
                 await conn.sendMessage(m.chat, {
                     text: `✅ *SubBot Conectado!*\n\n` +
                           `🤖 ${sock.user.name}\n` +
@@ -447,7 +486,6 @@ export async function AstaJadiBot(options) {
                 }).catch(() => {})
             }
 
-            // Unirse a newsletters
             if (global.ch) {
                 for (const ch of Object.values(global.ch)) {
                     if (ch?.endsWith('@newsletter')) {
@@ -457,26 +495,19 @@ export async function AstaJadiBot(options) {
             }
         }
 
-        // Manejar desconexión
+        // ===== DESCONEXIÓN =====
         if (connection === 'close') {
             const statusCode = lastDisconnect?.error?.output?.statusCode || 
                               lastDisconnect?.error?.output?.payload?.statusCode
 
             console.log(chalk.yellow(`🔌 Desconexión ${userId}: ${statusCode}`))
 
-            const shouldReconnect = ![
-                DisconnectReason.loggedOut,
-                DisconnectReason.badSession,
-                401, 405
-            ].includes(statusCode)
-
             const shouldCleanup = [
                 DisconnectReason.loggedOut,
                 DisconnectReason.badSession,
-                401, 405, 403
+                401, 403, 405
             ].includes(statusCode)
 
-            // Limpiar de globales
             const index = global.conns.indexOf(sock)
             if (index > -1) global.conns.splice(index, 1)
             global.activeSubBots.delete(sock.user?.jid)
@@ -484,76 +515,35 @@ export async function AstaJadiBot(options) {
             if (shouldCleanup) {
                 console.log(chalk.red(`🗑️ Sesión inválida, limpiando: ${userId}`))
                 await cleanup(true)
-                await m.reply?.(`❌ Sesión inválida. Vuelve a vincular con ${usedPrefix}qr`)
+                if (m && !isAutoStart) {
+                    await m.reply?.(`❌ Sesión inválida. Vuelve a vincular con ${usedPrefix}qr`)
+                }
                 return
             }
 
-            if (shouldReconnect && reconnectAttempts < maxReconnectAttempts) {
+            if (reconnectAttempts < maxReconnectAttempts) {
                 console.log(chalk.blue(`🔄 Reconectando ${userId}...`))
                 await cleanup(false)
-
-                // Reconexión con delay exponencial
-                await delay(Math.min(1000 * Math.pow(2, reconnectAttempts), 30000))
-
+                await delay(Math.min(4000 * Math.pow(2, reconnectAttempts), 30000))
                 await AstaJadiBot({
                     ...options,
                     isReconnect: true
                 })
-            } else if (reconnectAttempts >= maxReconnectAttempts) {
+            } else {
                 await cleanup(true)
-                await m.reply?.(`❌ SubBot desconectado permanentemente tras ${maxReconnectAttempts} intentos.`)
+                if (m && !isAutoStart) {
+                    await m.reply?.(`❌ SubBot desconectado permanentemente.`)
+                }
             }
         }
     }
 
-    // ============= CARGAR HANDLER CON RECARGA SEGURA =============
+    // ============= CARGAR HANDLER =============
     let handlerModule
     try {
         handlerModule = await import('../../handler.js')
     } catch (e) {
         console.error('Error cargando handler:', e)
-    }
-
-    const creloadHandler = async function (restartConn) {
-        try {
-            const Handler = await import(`../../handler.js?update=${Date.now()}`)
-                .catch(() => null)
-
-            if (Handler && Object.keys(Handler).length) {
-                handlerModule = Handler
-            }
-        } catch (e) {
-            console.error('Error recargando handler:', e)
-        }
-
-        if (restartConn && sockRef.current) {
-            const oldChats = { ...sockRef.current.chats }
-
-            try {
-                if (sockRef.current.ws?.readyState === 1) {
-                    sockRef.current.ws.close()
-                }
-            } catch {}
-
-            sockRef.current.ev.removeAllListeners()
-
-            // Crear nueva conexión preservando chats
-            const newSock = makeWASocket({
-                ...connectionOptions,
-                chats: oldChats
-            })
-
-            sockRef.current = newSock
-            sock = newSock
-            sock.subConfig = subBotConfig
-            sock.userId = userId
-
-            // Re-registrar listeners
-            setupListeners()
-        }
-
-        setupListeners()
-        return true
     }
 
     const setupListeners = () => {
@@ -572,7 +562,7 @@ export async function AstaJadiBot(options) {
 
     // Health check cada 30 segundos
     messageRetryTimer = setInterval(() => {
-        if (sock.ws?.readyState === 3) { // CLOSED
+        if (sock.ws?.readyState === 3) {
             console.log(chalk.red(`💔 WebSocket cerrado detectado: ${userId}`))
             clearInterval(messageRetryTimer)
             connectionUpdate({ 
@@ -593,9 +583,7 @@ async function cleanupSession(sessionPath, userId) {
     } catch (e) {
         console.error('Error eliminando sesión:', e)
     }
-
     global.subBotsData.delete(userId)
-    // NUEVO: También limpiar la bandera de código enviado
     global.sentCodes.delete(userId)
 }
 
