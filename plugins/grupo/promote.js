@@ -1,12 +1,15 @@
-import { areJidsSameUser } from '@whiskeysockets/baileys'
+import { areJidsSameUser, jidNormalizedUser } from '@whiskeysockets/baileys'
 
 const handler = async (m, { conn, args, usedPrefix, command }) => {
-    // Obtener usuario a promover
+    // Obtener usuario a promover y normalizar el JID
     let who = m.mentionedJid && m.mentionedJid[0] 
         ? m.mentionedJid[0] 
         : m.quoted ? m.quoted.sender 
         : args[0] ? (args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net') 
         : null
+
+    // Normalizar el JID para asegurar formato correcto
+    if (who) who = jidNormalizedUser(who)
 
     if (!who) return conn.reply(m.chat, 
         `> . ﹡ ﹟ ⬆️ ׄ ⬭ *ᴘʀᴏᴍᴏᴠᴇʀ ᴀ ᴀᴅᴍɪɴ*\n\n` +
@@ -62,7 +65,8 @@ const handler = async (m, { conn, args, usedPrefix, command }) => {
         conn.reply(m.chat, 
             `> . ﹡ ﹟ ❌ ׄ ⬭ *ᴇʀʀᴏʀ*\n\n` +
             `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ⚠️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-            `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: ${error.message || 'No se pudo promover al usuario'}`, m)
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: ${error.message || 'No se pudo promover al usuario'}\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *sᴏʟᴜᴄɪᴏ́ɴ* :: Intenta usar el comando respondiendo al mensaje del usuario`, m)
     }
 }
 
