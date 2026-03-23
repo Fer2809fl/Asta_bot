@@ -52,6 +52,5 @@ handler.command = ['demote', 'degradar']
 handler.group = true
 handler.admin = true
 handler.botAdmin = true
-handler.reg = true
 
 export default handler
