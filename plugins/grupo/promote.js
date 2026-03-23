@@ -2,22 +2,22 @@ import { areJidsSameUser } from '@whiskeysockets/baileys'
 
 const handler = async (m, { conn, args, usedPrefix, command, groupMetadata }) => {
     // Verificar permisos
-    if (!m.isGroup) return m.reply(
+    if (!m.isGroup) return conn.reply(m.chat, 
         `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴄᴏᴍᴀɴᴅᴏ ᴅᴇ ɢʀᴜᴘᴏ*\n\n` +
         `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🚫 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-        `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: Este comando solo funciona en grupos`)
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: Este comando solo funciona en grupos`, m)
     
     const botAdmin = await conn.groupMetadata(m.chat).then(m => m.participants.find(p => areJidsSameUser(p.id, conn.user.jid)))
-    if (!botAdmin || !botAdmin.admin) return m.reply(
+    if (!botAdmin || !botAdmin.admin) return conn.reply(m.chat, 
         `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴘᴇʀᴍɪsᴏs ɪɴsᴜғɪᴄɪᴇɴᴛᴇs*\n\n` +
         `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🛡️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-        `ׅㅤ𓏸𓈒ㅤׄ *ʀᴇǫᴜɪsɪᴛᴏ* :: Necesito ser administrador para usar este comando`)
+        `ׅㅤ𓏸𓈒ㅤׄ *ʀᴇǫᴜɪsɪᴛᴏ* :: Necesito ser administrador para usar este comando`, m)
     
     const senderAdmin = m.isGroup ? await conn.groupMetadata(m.chat).then(m => m.participants.find(p => areJidsSameUser(p.id, m.sender))) : null
-    if (!senderAdmin || !senderAdmin.admin) return m.reply(
+    if (!senderAdmin || !senderAdmin.admin) return conn.reply(m.chat, 
         `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴀᴅᴍɪɴ ʀᴇǫᴜᴇʀɪᴅᴏ*\n\n` +
         `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 👤 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-        `ׅㅤ𓏸𓈒ㅤׄ *ʀᴇǫᴜɪsɪᴛᴏ* :: Solo los administradores pueden usar este comando`)
+        `ׅㅤ𓏸𓈒ㅤׄ *ʀᴇǫᴜɪsɪᴛᴏ* :: Solo los administradores pueden usar este comando`, m)
 
     // Obtener usuario a promover
     let who = m.mentionedJid && m.mentionedJid[0] 
@@ -26,36 +26,36 @@ const handler = async (m, { conn, args, usedPrefix, command, groupMetadata }) =>
         : args[0] ? (args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net') 
         : null
 
-    if (!who) return m.reply(
+    if (!who) return conn.reply(m.chat, 
         `> . ﹡ ﹟ ⬆️ ׄ ⬭ *ᴘʀᴏᴍᴏᴠᴇʀ ᴀ ᴀᴅᴍɪɴ*\n\n` +
         `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ⚠️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
         `ׅㅤ𓏸𓈒ㅤׄ *ᴜsᴏ* :: ${usedPrefix}${command} @usuario\n` +
-        `ׅㅤ𓏸𓈒ㅤׄ *ᴏ* :: Responde a un mensaje con ${usedPrefix}${command}`)
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴏ* :: Responde a un mensaje con ${usedPrefix}${command}`, m)
 
     // Verificar que no se promueva a sí mismo
-    if (areJidsSameUser(who, m.sender)) return m.reply(
+    if (areJidsSameUser(who, m.sender)) return conn.reply(m.chat, 
         `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴀᴄᴄɪᴏ́ɴ ɪɴᴠᴀ́ʟɪᴅᴀ*\n\n` +
         `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🚫 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-        `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴏᴛɪᴠᴏ* :: No puedes promoverte a ti mismo`)
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴏᴛɪᴠᴏ* :: No puedes promoverte a ti mismo`, m)
     
     // Verificar que no sea el bot
-    if (areJidsSameUser(who, conn.user.jid)) return m.reply(
+    if (areJidsSameUser(who, conn.user.jid)) return conn.reply(m.chat, 
         `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴀᴄᴄɪᴏ́ɴ ɪɴᴠᴀ́ʟɪᴅᴀ*\n\n` +
         `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🤖 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-        `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴏᴛɪᴠᴏ* :: No puedo promoverme a mí mismo`)
+        `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴏᴛɪᴠᴏ* :: No puedo promoverme a mí mismo`, m)
 
     try {
         const participant = await conn.groupMetadata(m.chat).then(m => m.participants.find(p => areJidsSameUser(p.id, who)))
         
-        if (!participant) return m.reply(
+        if (!participant) return conn.reply(m.chat, 
             `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴜsᴜᴀʀɪᴏ ɴᴏ ᴇɴᴄᴏɴᴛʀᴀᴅᴏ*\n\n` +
             `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🔍 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-            `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: El usuario no está en el grupo`)
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: El usuario no está en el grupo`, m)
             
-        if (participant.admin) return m.reply(
+        if (participant.admin) return conn.reply(m.chat, 
             `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ʏᴀ ᴇs ᴀᴅᴍɪɴ*\n\n` +
             `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🛡️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-            `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: El usuario ya es administrador`)
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴇsᴛᴀᴅᴏ* :: El usuario ya es administrador`, m)
 
         await conn.groupParticipantsUpdate(m.chat, [who], 'promote')
         
@@ -66,7 +66,7 @@ const handler = async (m, { conn, args, usedPrefix, command, groupMetadata }) =>
             if (contact) name = contact
         } catch {}
 
-        m.reply(
+        conn.reply(m.chat, 
             `> . ﹡ ﹟ ⬆️ ׄ ⬭ *ᴀᴅᴍɪɴɪsᴛʀᴀᴅᴏʀ ᴘʀᴏᴍᴏᴠɪᴅᴏ*\n\n` +
             `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 👑 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
             `ׅㅤ𓏸𓈒ㅤׄ *ᴜsᴜᴀʀɪᴏ* :: ${name}\n` +
@@ -76,10 +76,10 @@ const handler = async (m, { conn, args, usedPrefix, command, groupMetadata }) =>
         
     } catch (error) {
         console.error('Error en promote:', error)
-        m.reply(
+        conn.reply(m.chat, 
             `> . ﹡ ﹟ ❌ ׄ ⬭ *ᴇʀʀᴏʀ*\n\n` +
             `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ ⚠️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-            `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: ${error.message || 'No se pudo promover al usuario'}`)
+            `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: ${error.message || 'No se pudo promover al usuario'}`, m)
     }
 }
 
