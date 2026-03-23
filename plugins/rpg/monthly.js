@@ -1,50 +1,19 @@
+import fetch from 'node-fetch'
+async function getRcanal() {
+    try { const thumb = await (await fetch(global.icono)).buffer(); return { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: global.channelRD?.id || "120363399175402285@newsletter", serverMessageId: '', newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』" }, externalAdReply: { title: global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ', body: global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ', mediaType: 1, mediaUrl: global.redes, sourceUrl: global.redes, thumbnail: thumb, showAdAttribution: false, containsAutoReply: true, renderLargerThumbnail: false } } } catch { return {} }
+}
 var handler = async (m, { conn, usedPrefix }) => {
-if (!db.data.chats[m.chat].economy && m.isGroup) return m.reply(`《✦》Los comandos de *Economía* están desactivados en este grupo.\n\nUn *administrador* puede activarlos con el comando:\n» *${usedPrefix}economy on*`)
-let user = global.db.data.users[m.sender]
-const gap = 2592000000
-const now = Date.now()
-user.monthlyStreak = user.monthlyStreak || 0
-user.lastMonthlyGlobal = user.lastMonthlyGlobal || 0
-user.coin = user.coin || 0
-user.exp = user.exp || 0
-user.lastmonthly = user.lastmonthly || 0
-if (now < user.lastmonthly) {
-const wait = formatTime(Math.floor((user.lastmonthly - now) / 1000))
-return conn.reply(m.chat, `ꕥ Ya has reclamado tu recompensa mensual.\n> Puedes reclamarlo de nuevo en *${wait}*`, m)
+    const rcanal = await getRcanal(), currency = global.currency || '¥enes'
+    if (!global.db.data.chats[m.chat].economy && m.isGroup) return conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ 🚫 ׄ ⬭ *ᴇᴄᴏɴᴏᴍɪ́ᴀ ᴅᴇsᴀᴄᴛɪᴠᴀᴅᴀ*\n\nׅㅤ𓏸𓈒ㅤׄ Actívala con *${usedPrefix}economy on*`, contextInfo: rcanal }, { quoted: m })
+    let user = global.db.data.users[m.sender], gap = 2592000000, now = Date.now()
+    user.monthlyStreak ??= 0; user.lastMonthlyGlobal ??= 0; user.coin ??= 0; user.exp ??= 0; user.lastmonthly ??= 0
+    if (now < user.lastmonthly) { return conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ ⏳ ׄ ⬭ *ᴍᴏɴᴛʜʟʏ*\n\nׅㅤ𓏸𓈒ㅤׄ Ya reclamaste tu mensual.\nׅㅤ𓏸𓈒ㅤׄ Vuelve en *${fmt(Math.floor((user.lastmonthly-now)/1000))}*`, contextInfo: rcanal }, { quoted: m }) }
+    const lost = user.monthlyStreak >= 1 && now - user.lastMonthlyGlobal > gap * 1.5; if (lost) user.monthlyStreak = 0
+    if (now - user.lastMonthlyGlobal >= gap) { user.monthlyStreak = Math.min(user.monthlyStreak + 1, 8); user.lastMonthlyGlobal = now }
+    const coins = Math.min(60000 + (user.monthlyStreak - 1) * 5000, 95000)
+    user.coin += coins; user.exp += Math.floor(Math.random() * 401) + 100; user.lastmonthly = now + gap
+    await conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ 💰 ׄ ⬭ *ᴍᴏɴᴛʜʟʏ*\n\n*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜✅* ㅤ֢ㅤ⸱ㅤᯭִ*\nׅㅤ𓏸𓈒ㅤׄ *💸 ʀᴇᴄᴏᴍᴘᴇɴsᴀ* :: ¥${coins.toLocaleString()} ${currency}\nׅㅤ𓏸𓈒ㅤׄ *📅 ᴍᴇs* :: ${user.monthlyStreak}\nׅㅤ𓏸𓈒ㅤׄ *🔹 sɪɢᴜɪᴇɴᴛᴇ* :: +¥${Math.min(60000 + user.monthlyStreak * 5000, 95000).toLocaleString()}\n${lost ? 'ׅㅤ𓏸𓈒ㅤׄ *⚠️* Perdiste tu racha mensual' : ''}`, contextInfo: rcanal }, { quoted: m })
 }
-const lost = user.monthlyStreak >= 1 && now - user.lastMonthlyGlobal > gap * 1.5
-if (lost) user.monthlyStreak = 0
-const canClaimGlobal = now - user.lastMonthlyGlobal >= gap
-if (canClaimGlobal) {
-user.monthlyStreak = Math.min(user.monthlyStreak + 1, 8)
-user.lastMonthlyGlobal = now
-}
-const coins = Math.min(60000 + (user.monthlyStreak - 1) * 5000, 95000)
-const expRandom = Math.floor(Math.random() * (500 - 100 + 1)) + 100
-user.coin += coins
-user.exp += expRandom
-user.lastmonthly = now + gap
-let next = Math.min(60000 + user.monthlyStreak * 5000, 95000).toLocaleString()
-let msg = `> Mes *${user.monthlyStreak + 1}* » *+${next}*`
-if (lost) msg += `\n> ☆ ¡Has perdido tu racha de meses!`
-conn.reply(m.chat, `「❁」 Has reclamado tu recompensa mensual de *+${coins.toLocaleString()} ${currency}* (Mes *${user.monthlyStreak}*)\n${msg}`, m)
-}
-
-handler.help = ['monthly', 'mensual']
-handler.tags = ['rpg']
-handler.command = ['monthly', 'mensual']
-handler.group = true
-handler.reg = true
-
+handler.help = ['monthly']; handler.tags = ['rpg']; handler.command = ['monthly', 'mensual']; handler.group = true; handler.reg = true
 export default handler
-
-function formatTime(t) {
-const d = Math.floor(t / 86400)
-const h = Math.floor((t % 86400) / 3600)
-const m = Math.floor((t % 3600) / 60)
-const s = t % 60
-if (d) return `${d} día${d !== 1 ? 's' : ''} ${h} hora${h !== 1 ? 's' : ''} ${m} minuto${m !== 1 ? 's' : ''}`
-if (h) return `${h} hora${h !== 1 ? 's' : ''} ${m} minuto${m !== 1 ? 's' : ''} ${s} segundo${s !== 1 ? 's' : ''}`
-if (m) return `${m} minuto${m !== 1 ? 's' : ''} ${s} segundo${s !== 1 ? 's' : ''}`
-return `${s} segundo${s !== 1 ? 's' : ''}`
-}
+function fmt(t) { const d=Math.floor(t/86400),h=Math.floor((t%86400)/3600),m=Math.floor((t%3600)/60),s=t%60; return [d&&`${d}d`,h&&`${h}h`,m&&`${m}m`,`${s}s`].filter(Boolean).join(' ') }

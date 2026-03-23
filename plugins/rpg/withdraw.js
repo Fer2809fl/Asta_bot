@@ -1,34 +1,33 @@
-let handler = async (m, { args, usedPrefix, command }) => {
-    if (!db.data.chats[m.chat].economy && m.isGroup) {
-        return m.reply(`⚠️ Los comandos de *Economía* están desactivados en este grupo.\n\nUn *administrador* puede activarlos con:\n» *${usedPrefix}economy on*`)
-    }
-    let user = global.db.data.users[m.sender]
-    if (!args[0]) return m.reply(`❗ Ingresa la cantidad de *${currency}* que deseas retirar.`)
-
-    if (args[0] === 'all') {
-        let count = parseInt(user.bank)
-        if (!count) return m.reply(`❌ No tienes *${currency}* para retirar.`)
-        user.bank -= count
-        user.coin += count
-        await m.reply(`✅ Has retirado *¥${count.toLocaleString()} ${currency}* del banco.\n> Ahora puedes usarlo libremente, ¡pero cuidado con los robos!`)
-        return
-    }
-
-    if (!Number(args[0])) return m.reply(`❌ Cantidad inválida.\n> Ejemplo 1 » *${usedPrefix + command} 25000*\n> Ejemplo 2 » *${usedPrefix + command} all*`)
-
-    let count = parseInt(args[0])
-    if (!user.bank) return m.reply(`❌ No tienes fondos en el Banco.`)
-    if (user.bank < count) return m.reply(`⚠️ Solo tienes *¥${user.bank.toLocaleString()} ${currency}* en el Banco.`)
-
-    user.bank -= count
-    user.coin += count
-    await m.reply(`✅ Has retirado *¥${count.toLocaleString()} ${currency}* del banco.\n> Ahora puedes usarlo, ¡pero cuidado con los robos!`)
+import fetch from 'node-fetch'
+async function getRcanal() {
+    try { const thumb = await (await fetch(global.icono)).buffer(); return { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: global.channelRD?.id || "120363399175402285@newsletter", serverMessageId: '', newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』" }, externalAdReply: { title: global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ', body: global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ', mediaType: 1, mediaUrl: global.redes, sourceUrl: global.redes, thumbnail: thumb, showAdAttribution: false, containsAutoReply: true, renderLargerThumbnail: false } } } catch { return {} }
 }
-
-handler.help = ['retirar']
-handler.tags = ['rpg']
-handler.command = ['withdraw', 'retirar', 'with']
-handler.group = true
-handler.reg = true
-
+let handler = async (m, { args, usedPrefix, command, conn }) => {
+    const rcanal = await getRcanal(), currency = global.currency || '¥enes'
+    if (!global.db.data.chats[m.chat].economy && m.isGroup) return conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ 🚫 ׄ ⬭ *ᴇᴄᴏɴᴏᴍɪ́ᴀ ᴅᴇsᴀᴄᴛɪᴠᴀᴅᴀ*\n\nׅㅤ𓏸𓈒ㅤׄ Actívala con *${usedPrefix}economy on*`, contextInfo: rcanal }, { quoted: m })
+    let user = global.db.data.users[m.sender]; user.coin ??= 0; user.bank ??= 0
+    if (!args[0]) return conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ 🏦 ׄ ⬭ *ʀᴇᴛɪʀᴀʀ*\n\nׅㅤ𓏸𓈒ㅤׄ *ᴜsᴏ* :: *${usedPrefix + command} 25000*\nׅㅤ𓏸𓈒ㅤׄ *ᴏ* :: *${usedPrefix + command} all*`, contextInfo: rcanal }, { quoted: m })
+    let count
+    if (args[0] === 'all') {
+        count = parseInt(user.bank)
+        if (!count) return conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ 💸 ׄ ⬭ *sɪɴ ғᴏɴᴅᴏs*\n\nׅㅤ𓏸𓈒ㅤׄ No tienes ${currency} en el banco.`, contextInfo: rcanal }, { quoted: m })
+    } else {
+        count = parseInt(args[0])
+        if (isNaN(count) || count < 1) return conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴇʀʀᴏʀ*\n\nׅㅤ𓏸𓈒ㅤׄ Cantidad inválida.`, contextInfo: rcanal }, { quoted: m })
+        if (user.bank < count) return conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ 💸 ׄ ⬭ *sɪɴ ғᴏɴᴅᴏs*\n\nׅㅤ𓏸𓈒ㅤׄ Solo tienes *¥${user.bank.toLocaleString()} ${currency}* en el banco.`, contextInfo: rcanal }, { quoted: m })
+    }
+    user.bank -= count; user.coin += count
+    await conn.sendMessage(m.chat, {
+        text:
+            `> . ﹡ ﹟ 🏦 ׄ ⬭ *ʀᴇᴛɪʀᴏ ᴇxɪᴛᴏsᴏ*\n\n` +
+            `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜✅* ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *💰 ʀᴇᴛɪʀᴀᴅᴏ* :: ¥${count.toLocaleString()} ${currency}\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *🪙 ᴄᴀʀᴛᴇʀᴀ* :: ¥${user.coin.toLocaleString()} ${currency}\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *🏦 ʙᴀɴᴄᴏ* :: ¥${user.bank.toLocaleString()} ${currency}\n\n` +
+            `> ✧ ¡Cuidado con los robos!`,
+        contextInfo: rcanal
+    }, { quoted: m })
+}
+handler.help = ['retirar']; handler.tags = ['rpg']; handler.command = ['withdraw', 'retirar', 'with']
+handler.group = true; handler.reg = true
 export default handler

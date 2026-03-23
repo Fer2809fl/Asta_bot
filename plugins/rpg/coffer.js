@@ -1,45 +1,32 @@
+import fetch from 'node-fetch'
+async function getRcanal() {
+    try { const thumb = await (await fetch(global.icono)).buffer(); return { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: global.channelRD?.id || "120363399175402285@newsletter", serverMessageId: '', newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』" }, externalAdReply: { title: global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ', body: global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ', mediaType: 1, mediaUrl: global.redes, sourceUrl: global.redes, thumbnail: thumb, showAdAttribution: false, containsAutoReply: true, renderLargerThumbnail: false } } } catch { return {} }
+}
 var handler = async (m, { conn, usedPrefix, command }) => {
-if (!db.data.chats[m.chat].economy && m.isGroup) {
-return m.reply(`《✦》Los comandos de *Economía* están desactivados en este grupo.\n\nUn *administrador* puede activarlos con el comando:\n» *${usedPrefix}economy on*`)
+    const rcanal = await getRcanal(), currency = global.currency || '¥enes'
+    if (!global.db.data.chats[m.chat].economy && m.isGroup) return conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ 🚫 ׄ ⬭ *ᴇᴄᴏɴᴏᴍɪ́ᴀ ᴅᴇsᴀᴄᴛɪᴠᴀᴅᴀ*\n\nׅㅤ𓏸𓈒ㅤׄ Actívala con *${usedPrefix}economy on*`, contextInfo: rcanal }, { quoted: m })
+    let user = global.db.data.users[m.sender], now = Date.now(), gap = 86400000
+    user.lastcofre ??= 0; user.coin ??= 0; user.exp ??= 0
+    if (now < user.lastcofre) { const wait = fmt(Math.floor((user.lastcofre - now) / 1000)); return conn.sendMessage(m.chat, { text: `> . ﹡ ﹟ ⏳ ׄ ⬭ *ᴄᴏғʀᴇ*\n\nׅㅤ𓏸𓈒ㅤׄ Ya abriste tu cofre hoy.\nׅㅤ𓏸𓈒ㅤׄ Vuelve en *${wait}*`, contextInfo: rcanal }, { quoted: m }) }
+    const reward = Math.floor(Math.random() * (60000 - 40000 + 1)) + 40000
+    const expGain = Math.floor(Math.random() * 111) + 50
+    user.coin += reward; user.exp += expGain; user.lastcofre = now + gap
+    await conn.sendMessage(m.chat, {
+        text:
+            `> . ﹡ ﹟ 📦 ׄ ⬭ *ᴄᴏғʀᴇ ᴀʙɪᴇʀᴛᴏ*\n\n` +
+            `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜✨* ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ ${pick(cofres)}\n\n` +
+            `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜🎁* ㅤ֢ㅤ⸱ㅤᯭִ* — *ʀᴇᴄᴏᴍᴘᴇɴsᴀs*\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *💰 ${currency}* :: +¥${reward.toLocaleString()}\n` +
+            `ׅㅤ𓏸𓈒ㅤׄ *⭐ XP* :: +${expGain}`,
+        contextInfo: rcanal
+    }, { quoted: m })
 }
-let user = global.db.data.users[m.sender]
-let now = Date.now()
-let gap = 86400000
-user.lastcofre = user.lastcofre || 0
-user.coin = user.coin || 0
-user.exp = user.exp || 0
-if (now < user.lastcofre) {
-let wait = formatTime(Math.floor((user.lastcofre - now) / 1000))
-return conn.reply(m.chat, `ꕥ Debes esperar *${wait}* para usar *${usedPrefix + command}* de nuevo.`, m)
-}
-let reward = Math.floor(Math.random() * (60000 - 40000 + 1)) + 40000
-let expGain = Math.floor(Math.random() * (111)) + 50
-user.coin += reward
-user.exp += expGain
-user.lastcofre = now + gap
-conn.reply(m.chat, `「✿」 ${pickRandom(cofres)}\n> Has recibido *¥${reward.toLocaleString()} ${currency}*.`, m)
-}
-
-handler.help = ['cofre']
-handler.tags = ['economía']
-handler.command = ['coffer', 'cofre', 'abrircofre', 'cofreabrir']
-handler.group = true
-handler.reg = true
+handler.help = ['cofre']; handler.tags = ['economía']; handler.command = ['coffer', 'cofre', 'abrircofre', 'cofreabrir']
+handler.group = true; handler.reg = true
 export default handler
-
-function formatTime(totalSec) {
-const h = Math.floor(totalSec / 3600)
-const m = Math.floor((totalSec % 3600) / 60)
-const s = totalSec % 60
-const txt = []
-if (h > 0) txt.push(`${h} hora${h !== 1 ? 's' : ''}`)
-if (m > 0 || h > 0) txt.push(`${m} minuto${m !== 1 ? 's' : ''}`)
-txt.push(`${s} segundo${s !== 1 ? 's' : ''}`)
-return txt.join(' ')
-}
-function pickRandom(list) {
-return list[Math.floor(Math.random() * list.length)]
-}
+function fmt(t) { const h = Math.floor(t/3600), m = Math.floor((t%3600)/60), s = t%60; return [h&&`${h}h`, (m||h)&&`${m}m`, `${s}s`].filter(Boolean).join(' ') }
+function pick(list) { return list[Math.floor(Math.random() * list.length)] }
 const cofres = [
 "Has encontrado un cofre antiguo en un barco hundido.",
 "Descubriste un cofre decorado con intrincados grabados en una isla desierta.",
@@ -51,14 +38,6 @@ const cofres = [
 "Descubriste un cofre escondido detrás de una cascada, rebosante de piedras preciosas.",
 "Te topaste con un cofre encantado que guarda la historia de antiguos aventureros.",
 "Encontraste un cofre de hierro forjado, custodiado por un viejo dragón.",
-"Desenterraste un cofre en una tumba antigua que contenía reliquias sagradas.",
-"Te encontraste con un cofre que, al abrirlo, libera una nube de polvo dorado.",
 "Hallaste un cofre en el fondo de un lago, cubierto de algas y misterios.",
-"Te topaste con un cofre que emana una luz mágica en la oscuridad.",
-"Descubriste un cofre de cristal tallado, lleno de artefactos de poder.",
-"Encontraste un cofre en un desván polvoriento, repleto de cartas y recuerdos.",
-"Te adentraste en una fortaleza y hallaste un cofre lleno de armas antiguas.",
-"Desenterraste un cofre en un campo de batalla, lleno de tesoros de guerreros caídos.",
-"Te topaste con un cofre que se abre solo al resolver un enigma.",
-"Encontraste un cofre de madera noble, lleno de joyas de culturas perdidas."
+"Descubriste un cofre de cristal tallado, lleno de artefactos de poder."
 ]
