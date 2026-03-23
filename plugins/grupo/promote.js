@@ -1,24 +1,6 @@
 import { areJidsSameUser } from '@whiskeysockets/baileys'
 
-const handler = async (m, { conn, args, usedPrefix, command, groupMetadata }) => {
-    // Verificar permisos
-    if (!m.isGroup) return conn.reply(m.chat, 
-        `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴄᴏᴍᴀɴᴅᴏ ᴅᴇ ɢʀᴜᴘᴏ*\n\n` +
-        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🚫 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-        `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴇᴛᴀʟʟᴇ* :: Este comando solo funciona en grupos`, m)
-    
-    const botAdmin = await conn.groupMetadata(m.chat).then(m => m.participants.find(p => areJidsSameUser(p.id, conn.user.jid)))
-    if (!botAdmin || !botAdmin.admin) return conn.reply(m.chat, 
-        `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴘᴇʀᴍɪsᴏs ɪɴsᴜғɪᴄɪᴇɴᴛᴇs*\n\n` +
-        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🛡️ ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-        `ׅㅤ𓏸𓈒ㅤׄ *ʀᴇǫᴜɪsɪᴛᴏ* :: Necesito ser administrador para usar este comando`, m)
-    
-    const senderAdmin = m.isGroup ? await conn.groupMetadata(m.chat).then(m => m.participants.find(p => areJidsSameUser(p.id, m.sender))) : null
-    if (!senderAdmin || !senderAdmin.admin) return conn.reply(m.chat, 
-        `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴀᴅᴍɪɴ ʀᴇǫᴜᴇʀɪᴅᴏ*\n\n` +
-        `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 👤 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
-        `ׅㅤ𓏸𓈒ㅤׄ *ʀᴇǫᴜɪsɪᴛᴏ* :: Solo los administradores pueden usar este comando`, m)
-
+const handler = async (m, { conn, args, usedPrefix, command }) => {
     // Obtener usuario a promover
     let who = m.mentionedJid && m.mentionedJid[0] 
         ? m.mentionedJid[0] 
@@ -45,7 +27,8 @@ const handler = async (m, { conn, args, usedPrefix, command, groupMetadata }) =>
         `ׅㅤ𓏸𓈒ㅤׄ *ᴍᴏᴛɪᴠᴏ* :: No puedo promoverme a mí mismo`, m)
 
     try {
-        const participant = await conn.groupMetadata(m.chat).then(m => m.participants.find(p => areJidsSameUser(p.id, who)))
+        const groupInfo = await conn.groupMetadata(m.chat)
+        const participant = groupInfo.participants.find(p => areJidsSameUser(p.id, who))
         
         if (!participant) return conn.reply(m.chat, 
             `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴜsᴜᴀʀɪᴏ ɴᴏ ᴇɴᴄᴏɴᴛʀᴀᴅᴏ*\n\n` +
