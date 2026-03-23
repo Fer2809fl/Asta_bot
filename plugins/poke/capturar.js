@@ -4,9 +4,19 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
 
   if (!m.quoted) return m.reply(`ㅤ𓏸𓈒ㅤׄ Responde al mensaje del Pokémon que quieres atrapar.`)
 
-  const botId = conn?.user?.id.split(':')[0] + '@s.whatsapp.net' || ''
-  const botSettings = global.db.data.settings[botId] || {}
-  const money = botSettings.currency || ''
+  // CORRECCIÓN: Obtener moneda de forma segura
+  let money = 'pokemonedas'
+  try {
+    const botId = conn?.user?.id?.split(':')?.[0] + '@s.whatsapp.net'
+    if (botId && global.db.data.settings) {
+      const botSettings = global.db.data.settings[botId]
+      if (botSettings?.currency) {
+        money = botSettings.currency
+      }
+    }
+  } catch (e) {
+    console.log('Error al obtener configuración del bot:', e)
+  }
 
   const now = Date.now()
   const cooldown = 15 * 60 * 1000
@@ -81,7 +91,8 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
     delete groupData.lastPokemonMsgId
 
   } catch (e) {
-    m.reply(msgglobal)
+    console.error('Error en capturar.js:', e)
+    m.reply('Ocurrió un error al capturar el Pokémon.')
   }
 }
 

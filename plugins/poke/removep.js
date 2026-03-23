@@ -11,9 +11,19 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
       return m.reply(`ㅤ𓏸𓈒ㅤׄ Ingresa el nombre del Pokémon para retirarlo del store.`)
     }
 
-    const botId = conn?.user?.id.split(':')[0] + '@s.whatsapp.net' || ''
-    const botSettings = global.db.data.settings[botId] || {}
-    const money = botSettings.currency || ''
+    // CORRECCIÓN: Obtener moneda de forma segura
+    let money = 'pokemonedas'
+    try {
+      const botId = conn?.user?.id?.split(':')?.[0] + '@s.whatsapp.net'
+      if (botId && global.db.data.settings) {
+        const botSettings = global.db.data.settings[botId]
+        if (botSettings?.currency) {
+          money = botSettings.currency
+        }
+      }
+    } catch (e) {
+      console.log('Error al obtener configuración del bot:', e)
+    }
 
     const pokemonName = text.trim().toLowerCase()
     const index = global.db.data.pokemonShop[m.chat].findIndex(p => p.nombre.toLowerCase() === pokemonName)
@@ -48,7 +58,8 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
       `ㅤ𓏸𓈒ㅤׄ El Pokémon ha vuelto a tu inventario.`
     )
   } catch (e) {
-    m.reply(msgglobal + e)
+    console.error('Error en removep.js:', e)
+    m.reply('Ocurrió un error al remover el Pokémon.')
   }
 }
 

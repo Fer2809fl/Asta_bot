@@ -20,9 +20,19 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
   try {
     if (!text) return m.reply(`ㅤ𓏸𓈒ㅤׄ Escribe el nombre del Pokémon con el que quieres pelear.`)
 
-    const botId = conn?.user?.id.split(':')[0] + '@s.whatsapp.net' || ''
-    const botSettings = global.db.data.settings[botId] || {}
-    const money = botSettings.currency || ''
+    // CORRECCIÓN: Obtener moneda de forma segura
+    let money = 'pokemonedas'
+    try {
+      const botId = conn?.user?.id?.split(':')?.[0] + '@s.whatsapp.net'
+      if (botId && global.db.data.settings) {
+        const botSettings = global.db.data.settings[botId]
+        if (botSettings?.currency) {
+          money = botSettings.currency
+        }
+      }
+    } catch (e) {
+      console.log('Error al obtener configuración del bot:', e)
+    }
 
     const now = Date.now()
     const battle = Object.values(global.db.data.pokemonBattles).find(b =>
@@ -123,7 +133,8 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
     const battleKey = Object.keys(global.db.data.pokemonBattles).find(k => global.db.data.pokemonBattles[k] === battle)
     if (battleKey) delete global.db.data.pokemonBattles[battleKey]
   } catch (e) {
-    m.reply(msgglobal + e)
+    console.error('Error en pvpaceptar.js:', e)
+    m.reply('Ocurrió un error al aceptar el PvP.')
   }
 }
 

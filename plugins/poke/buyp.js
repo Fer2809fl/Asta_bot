@@ -7,9 +7,19 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
       return m.reply(`ㅤ𓏸𓈒ㅤׄ Uso: *${usedPrefix + command} <nombre>*\n\nㅤ𓏸𓈒ㅤׄ Usa *${usedPrefix}pokeshop* para ver los Pokémon disponibles.`)
     }
 
-    const botId = conn?.user?.id.split(':')[0] + '@s.whatsapp.net' || ''
-    const botSettings = global.db.data.settings[botId] || {}
-    const money = botSettings.currency || ''
+    // CORRECCIÓN: Obtener moneda de forma segura
+    let money = 'pokemonedas'
+    try {
+      const botId = conn?.user?.id?.split(':')?.[0] + '@s.whatsapp.net'
+      if (botId && global.db.data.settings) {
+        const botSettings = global.db.data.settings[botId]
+        if (botSettings?.currency) {
+          money = botSettings.currency
+        }
+      }
+    } catch (e) {
+      console.log('Error al obtener configuración del bot:', e)
+    }
 
     if (!global.db.data.pokemonShop || !global.db.data.pokemonShop[m.chat] || global.db.data.pokemonShop[m.chat].length === 0) {
       return m.reply(`ㅤ𓏸𓈒ㅤׄ No hay Pokémon en venta en este grupo.`)
@@ -92,7 +102,8 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
       m
     )
   } catch (e) {
-    m.reply(msgglobal + e)
+    console.error('Error en buyp.js:', e)
+    m.reply('Ocurrió un error al comprar el Pokémon.')
   }
 }
 

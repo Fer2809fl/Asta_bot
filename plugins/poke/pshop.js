@@ -7,9 +7,19 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
       return m.reply(`ㅤ𓏸𓈒ㅤׄ No hay Pokémon en venta en este grupo.`)
     }
 
-    const botId = conn?.user?.id.split(':')[0] + '@s.whatsapp.net' || ''
-    const botSettings = global.db.data.settings[botId] || {}
-    const money = botSettings.currency || ''
+    // CORRECCIÓN: Obtener moneda de forma segura
+    let money = 'pokemonedas'
+    try {
+      const botId = conn?.user?.id?.split(':')?.[0] + '@s.whatsapp.net'
+      if (botId && global.db.data.settings) {
+        const botSettings = global.db.data.settings[botId]
+        if (botSettings?.currency) {
+          money = botSettings.currency
+        }
+      }
+    } catch (e) {
+      console.log('Error al obtener configuración del bot:', e)
+    }
 
     const shop = global.db.data.pokemonShop[m.chat]
     let message = `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜* ㅤ֢ㅤ⸱ㅤᯭִ* — *ᴛɪᴇɴᴅᴀ ᴅᴇ ᴘᴏᴋéᴍᴏɴ*\n\n`
@@ -31,7 +41,8 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
 
     await m.reply(message)
   } catch (e) {
-    m.reply(msgglobal + e)
+    console.error('Error en pshop.js:', e)
+    m.reply('Ocurrió un error al mostrar la tienda.')
   }
 }
 

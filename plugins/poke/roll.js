@@ -40,9 +40,19 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
     return m.reply(`ㅤ𓏸𓈒ㅤׄ Debes esperar *${timeText.trim()}* para usar *${usedPrefix + command}* de nuevo.`)
   }
 
-  const botId = conn?.user?.id.split(':')[0] + '@s.whatsapp.net' || ''
-  const botSettings = global.db.data.settings[botId] || {}
-  const money = botSettings.currency || ''
+  // CORRECCIÓN: Obtener moneda de forma segura
+  let money = 'pokemonedas'
+  try {
+    const botId = conn?.user?.id?.split(':')?.[0] + '@s.whatsapp.net'
+    if (botId && global.db.data.settings) {
+      const botSettings = global.db.data.settings[botId]
+      if (botSettings?.currency) {
+        money = botSettings.currency
+      }
+    }
+  } catch (e) {
+    console.log('Error al obtener configuración del bot:', e)
+  }
 
   try {
     const allPokemon = await loadPokemon()
@@ -109,7 +119,8 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
     userData.lastPokemonRoll = now + cooldown
 
   } catch (e) {
-    await conn.reply(m.chat, msgglobal, m)
+    console.error('Error en roll.js:', e)
+    await conn.reply(m.chat, 'Ocurrió un error al generar el Pokémon.', m)
   }
 }
 

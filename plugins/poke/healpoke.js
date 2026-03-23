@@ -21,9 +21,19 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
       return m.reply(`ㅤ𓏸𓈒ㅤׄ Uso: *${usedPrefix + command} <nombre_pokemon>*\n\nㅤ𓏸𓈒ㅤׄ Ejemplo: ${usedPrefix + command} Pikachu`)
     }
 
-    const botId = conn?.user?.id.split(':')[0] + '@s.whatsapp.net' || ''
-    const botSettings = global.db.data.settings[botId] || {}
-    const money = botSettings.currency || ''
+    // CORRECCIÓN: Obtener moneda de forma segura
+    let money = 'pokemonedas'
+    try {
+      const botId = conn?.user?.id?.split(':')?.[0] + '@s.whatsapp.net'
+      if (botId && global.db.data.settings) {
+        const botSettings = global.db.data.settings[botId]
+        if (botSettings?.currency) {
+          money = botSettings.currency
+        }
+      }
+    } catch (e) {
+      console.log('Error al obtener configuración del bot:', e)
+    }
 
     const userData = global.db.data.chats?.[m.chat]?.users?.[m.sender] || {}
 
@@ -70,7 +80,8 @@ let handler = async (m, { conn, usedPrefix, text, args, command }) => {
 
     userDatass.lastPokemonHeal = now + cooldown
   } catch (e) {
-    m.reply(msgglobal + e)
+    console.error('Error en healpoke.js:', e)
+    m.reply('Ocurrió un error al curar el Pokémon.')
   }
 }
 
