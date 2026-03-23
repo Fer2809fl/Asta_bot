@@ -5,12 +5,11 @@ import fs, { unwatchFile, watchFile } from "fs"
 import chalk from "chalk"
 import ws from "ws"
 import { jidNormalizedUser, areJidsSameUser } from '@whiskeysockets/baileys'
-import fetch from "node-fetch" // Añadido para obtener la miniatura del canal
+import fetch from "node-fetch"
 
 const isNumber = x => typeof x === "number" && !isNaN(x)
 const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(resolve, ms))
 
-// =================== FUNCIÓN PARA OBTENER EL CONTEXTINFO DEL CANAL (igual que en play.js) ===================
 async function getRcanal() {
     try {
         const thumb = await (await fetch(global.icono)).buffer()
@@ -38,7 +37,6 @@ async function getRcanal() {
     }
 }
 
-// =================== FUNCIÓN PARA ENVIAR MENSAJES CON ESTILO (como en play) ===================
 async function replyStyled(conn, m, text, options = {}) {
     const rcanal = await getRcanal()
     await conn.sendMessage(m.chat, {
@@ -65,16 +63,13 @@ export async function handler(chatUpdate) {
         if (!m) return
         m.exp = 0
 
-        // ============= CARGAR CONFIGURACIÓN DEL SUBBOT =============
         const isSubBot = this.user.jid !== global.conn.user.jid
         let subBotConfig = {}
         
         if (isSubBot) {
-            // Cargar configuración desde archivo si no está en memoria
             if (!this.subConfig) {
                 const sessionId = this.user.jid.split('@')[0]
                 const configPath = path.join(global.jadi, sessionId, 'config.json')
-                
                 if (fs.existsSync(configPath)) {
                     subBotConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
                     this.subConfig = subBotConfig
@@ -84,67 +79,39 @@ export async function handler(chatUpdate) {
             }
         }
 
-        // ============= DEFINICIÓN DE USUARIO CON SISTEMA DE REGISTRO =============
         const user = global.db.data.users[m.sender] = global.db.data.users[m.sender] || {
-            name: "",
-            age: 0,
-            exp: 0, 
-            coin: 0, 
-            bank: 0, 
-            level: 0, 
-            health: 100,
-            genre: "", 
-            birth: "", 
-            marry: "", 
-            description: "",
-            packstickers: null, 
-            premium: false, 
-            premiumTime: 0,
-            banned: false, 
-            bannedReason: "", 
-            commands: 0,
-            afk: -1, 
-            afkReason: "", 
-            warn: 0,
-            registered: false,
-            regTime: 0,
-            serial: ""
+            name: "", age: 0, exp: 0, coin: 0, bank: 0, level: 0, health: 100,
+            genre: "", birth: "", marry: "", description: "", packstickers: null,
+            premium: false, premiumTime: 0, banned: false, bannedReason: "",
+            commands: 0, afk: -1, afkReason: "", warn: 0, registered: false,
+            regTime: 0, serial: ""
         }
-
+        
         const chat = global.db.data.chats[m.chat] = global.db.data.chats[m.chat] || {
             isBanned: false, 
             isMute: false, 
-            welcome: false,
+            welcome: false, 
             sWelcome: "", 
-            sBye: "", 
-            detect: true, 
-            primaryBot: null,
+            sBye: "",
+            detect: true,        // ✅ Por defecto activado
+            primaryBot: null, 
             modoadmin: false, 
-            antiLink: true, 
-            nsfw: false,
+            antiLink: true,
+            nsfw: false, 
             economy: true, 
-            gacha: true
+            gacha: true,
+            pokes: true,
+            adminonly: false
         }
 
         const settings = global.db.data.settings[this.user.jid] = global.db.data.settings[this.user.jid] || {
-            self: false, 
-            restrict: true, 
-            jadibotmd: true,
-            antiPrivate: false, 
-            gponly: false
+            self: false, restrict: true, jadibotmd: true, antiPrivate: false, gponly: false
         }
 
-        // Aplicar configuración del SubBot
         if (isSubBot && subBotConfig) {
-            if (subBotConfig.mode === 'private') {
-                settings.self = true
-            }
-            if (subBotConfig.antiPrivate !== undefined) {
-                settings.antiPrivate = subBotConfig.antiPrivate
-            }
-            if (subBotConfig.gponly !== undefined) {
-                settings.gponly = subBotConfig.gponly
-            }
+            if (subBotConfig.mode === 'private') settings.self = true
+            if (subBotConfig.antiPrivate !== undefined) settings.antiPrivate = subBotConfig.antiPrivate
+            if (subBotConfig.gponly !== undefined) settings.gponly = subBotConfig.gponly
         }
 
         if (typeof m.text !== "string") m.text = ""
@@ -161,13 +128,12 @@ export async function handler(chatUpdate) {
         const isPrems = isROwner || global.prems.map(v => v.replace(/\D/g, "") + "@s.whatsapp.net").includes(m.sender) || user.premium
         const isOwners = [this.user.jid, ...global.owner.map(v => v + "@s.whatsapp.net")].includes(m.sender)
 
-        // Verificar si Fernando tiene acceso
         const isFernando = global.fernando
             .map(v => v.replace(/\D/g, "") + "@s.whatsapp.net")
             .includes(m.sender)
 
         if (settings.self && !isOwners) return
-        
+
         if (settings.gponly && !isOwners && !m.chat.endsWith('g.us')) {
             const allowedCommands = [
                 'qr', 'code', 'menu', 'help', 'infobot', 'ping',
@@ -175,12 +141,8 @@ export async function handler(chatUpdate) {
                 'subcmd', 'config', 'cmdinfo', 'botlist', 'menú',
                 'reg', 'register', 'verificar', 'verify'
             ]
-
             const userCommand = m.text.split(' ')[0].toLowerCase()
-            const isAllowed = allowedCommands.some(cmd => 
-                userCommand.includes(cmd.toLowerCase())
-            )
-
+            const isAllowed = allowedCommands.some(cmd => userCommand.includes(cmd.toLowerCase()))
             if (!isAllowed) {
                 const msg = 
                     `> . ﹡ ﹟ 🔒 ׄ ⬭ *Modo Solo Grupos*\n\n` +
@@ -203,6 +165,24 @@ export async function handler(chatUpdate) {
 
         if (m.isBaileys) return
         m.exp += Math.ceil(Math.random() * 10)
+
+        // ============= VERIFICAR BOT PRINCIPAL DEL GRUPO =============
+        if (m.isGroup && chat.primaryBot) {
+            const activeBotJids = [
+                ...global.conns
+                    .filter(c => c.user && c.ws?.socket && c.ws.socket.readyState !== 3)
+                    .map(c => c.user.jid)
+            ]
+            if (global.conn?.user?.jid && !activeBotJids.includes(global.conn.user.jid)) {
+                activeBotJids.push(global.conn.user.jid)
+            }
+
+            if (!activeBotJids.includes(chat.primaryBot)) {
+                chat.primaryBot = null
+            } else {
+                if (this.user.jid !== chat.primaryBot) return
+            }
+        }
 
         let groupMetadata = {}
         let participants = []
@@ -242,12 +222,10 @@ export async function handler(chatUpdate) {
 
             if (!global.opts?.restrict && plugin.tags?.includes("admin")) continue
 
-            // ============= MANEJO DE PREFIJOS MEJORADO =============
             const pluginPrefix = plugin.customPrefix || 
                                (isSubBot && subBotConfig?.prefix) || 
                                global.prefix
             
-            // Verificar si se permite sin prefijo
             const allowNoPrefix = isSubBot ? 
                 (subBotConfig?.sinprefix || false) : 
                 global.sinprefix
@@ -255,7 +233,6 @@ export async function handler(chatUpdate) {
             let match = null
             let usedPrefix = ""
 
-            // Caso 1: Comando con prefijo
             if (pluginPrefix instanceof RegExp) {
                 match = [pluginPrefix.exec(m.text), pluginPrefix]
                 usedPrefix = match ? (match[0] || "")[0] || "" : ""
@@ -271,9 +248,7 @@ export async function handler(chatUpdate) {
                 usedPrefix = match ? (match[0] || "")[0] || "" : ""
             }
 
-            // Caso 2: Comando sin prefijo (solo si está permitido)
             if (!match && allowNoPrefix && m.text) {
-                // Verificar si la primera palabra coincide con algún comando del plugin
                 const firstWord = m.text.trim().split(' ')[0].toLowerCase()
                 let isAcceptWithoutPrefix = false
                 
@@ -289,7 +264,6 @@ export async function handler(chatUpdate) {
                 }
                 
                 if (isAcceptWithoutPrefix) {
-                    // Crear un match artificial para comandos sin prefijo
                     match = [[firstWord], new RegExp(`^${firstWord}`)]
                     usedPrefix = ""
                 }
@@ -317,13 +291,16 @@ export async function handler(chatUpdate) {
             global.comando = command
             user.commands = (user.commands || 0) + 1
 
-            if (chat.isBanned && !isROwner) {
+            // ============= VERIFICAR BOT BANEADO =============
+            const isBotManageCommand = command === 'bot' && args[0]?.toLowerCase() === 'on'
+
+            if (chat.isBanned && !isROwner && !isBotManageCommand) {
                 const aviso = 
                     `> . ﹡ ﹟ ⚠️ ׄ ⬭ *Bot Desactivado*\n\n` +
                     `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜🔒* ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
                     `ׅㅤ𓏸𓈒ㅤׄ *Motivo* :: El bot *${global.botname}* está desactivado en este grupo.\n\n` +
                     `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜👑* ㅤ֢ㅤ⸱ㅤᯭִ* — *Solución*\n` +
-                    `ׅㅤ𓏸𓈒ㅤׄ » *${usedPrefix}bot on* (solo administradores)`
+                    `ׅㅤ𓏸𓈒ㅤׄ » *${usedPrefix}bot on* (solo administradores o el owner)`
                 await replyStyled(this, m, aviso)
                 return
             }
@@ -337,23 +314,12 @@ export async function handler(chatUpdate) {
                 return
             }
 
-            // ============= VERIFICACIÓN DE REGISTRO =============
-            // Si el comando requiere registro
             if (plugin.reg && !isROwner) {
                 const user = global.db.data.users[m.sender]
-                
-                // Verificar si está registrado
-                if (!user.registered) {
-                    return global.dfail("reg", m, this)
-                }
-                
-                // Verificar si tiene datos incompletos (nombre o edad faltantes)
-                if (!user.name || !user.age) {
-                    return global.dfail("regincompleto", m, this)
-                }
+                if (!user.registered) return global.dfail("reg", m, this)
+                if (!user.name || !user.age) return global.dfail("regincompleto", m, this)
             }
 
-            // ============= VERIFICAR PERMISOS ESPECIALES PARA FERNANDO =============
             let hasPermission = true
             
             if (plugin.rowner && plugin.owner) {
@@ -365,7 +331,6 @@ export async function handler(chatUpdate) {
                 if (!hasPermission) return global.dfail("rowner", m, this)
             }
             if (plugin.owner && !isOwner) {
-                // Permitir a Fernando ejecutar comandos de owner en SubBots
                 if (isSubBot && isFernando) {
                     hasPermission = true
                 } else {
@@ -381,42 +346,30 @@ export async function handler(chatUpdate) {
             const adminMode = chat.modoadmin
             const requiresAdmin = plugin.botAdmin || plugin.admin || plugin.group
 
-            if (adminMode && !isOwner && m.isGroup && !isAdmin && requiresAdmin) return
-            if (plugin.group && !m.isGroup) return global.dfail("group", m, this)
-            if (plugin.botAdmin && !isBotAdmin) return global.dfail("botAdmin", m, this)
-            if (plugin.admin && !isAdmin) return global.dfail("admin", m, this)
-            if (plugin.private && m.isGroup) return global.dfail("private", m, this)
+            if (!isROwner && !isOwner) {
+                if (adminMode && m.isGroup && !isAdmin && requiresAdmin) return
+                if (plugin.group && !m.isGroup) return global.dfail("group", m, this)
+                if (plugin.botAdmin && !isBotAdmin) return global.dfail("botAdmin", m, this)
+                if (plugin.admin && !isAdmin) return global.dfail("admin", m, this)
+                if (plugin.private && m.isGroup) return global.dfail("private", m, this)
+            } else {
+                if (plugin.group && !m.isGroup) return global.dfail("group", m, this)
+                if (plugin.private && m.isGroup) return global.dfail("private", m, this)
+                if (plugin.botAdmin && !isBotAdmin) return global.dfail("botAdmin", m, this)
+            }
 
             m.isCommand = true
             m.exp += plugin.exp ? parseInt(plugin.exp) : 10
 
             try {
                 await plugin.call(this, m, {
-                    match, 
-                    usedPrefix, 
-                    noPrefix, 
-                    args,
-                    command, 
-                    text: args.join(" "), 
-                    conn: this,
-                    participants, 
-                    groupMetadata, 
-                    userGroup, 
-                    botGroup,
-                    isROwner, 
-                    isOwner: isOwner || (isSubBot && isFernando),
-                    isRAdmin, 
-                    isAdmin, 
-                    isBotAdmin, 
-                    isPrems, 
-                    chatUpdate, 
-                    __dirname: ___dirname,
-                    __filename, 
-                    user, 
-                    chat, 
-                    settings,
-                    isFernando,
-                    subBotConfig
+                    match, usedPrefix, noPrefix, args, command,
+                    text: args.join(" "), conn: this,
+                    participants, groupMetadata, userGroup, botGroup,
+                    isROwner, isOwner: isOwner || (isSubBot && isFernando),
+                    isRAdmin, isAdmin, isBotAdmin, isPrems,
+                    chatUpdate, __dirname: ___dirname, __filename,
+                    user, chat, settings, isFernando, subBotConfig
                 })
             } catch (err) {
                 m.error = err
@@ -425,31 +378,13 @@ export async function handler(chatUpdate) {
                 if (typeof plugin.after === "function") {
                     try {
                         await plugin.after.call(this, m, {
-                            match, 
-                            usedPrefix, 
-                            noPrefix, 
-                            args,
-                            command, 
-                            text: args.join(" "), 
-                            conn: this,
-                            participants, 
-                            groupMetadata, 
-                            userGroup, 
-                            botGroup,
-                            isROwner, 
-                            isOwner: isOwner || (isSubBot && isFernando),
-                            isRAdmin, 
-                            isAdmin, 
-                            isBotAdmin, 
-                            isPrems,
-                            chatUpdate, 
-                            __dirname: ___dirname,
-                            __filename, 
-                            user, 
-                            chat, 
-                            settings,
-                            isFernando, 
-                            subBotConfig
+                            match, usedPrefix, noPrefix, args, command,
+                            text: args.join(" "), conn: this,
+                            participants, groupMetadata, userGroup, botGroup,
+                            isROwner, isOwner: isOwner || (isSubBot && isFernando),
+                            isRAdmin, isAdmin, isBotAdmin, isPrems,
+                            chatUpdate, __dirname: ___dirname, __filename,
+                            user, chat, settings, isFernando, subBotConfig
                         })
                     } catch (err) {
                         console.error(err)
@@ -479,7 +414,6 @@ export async function handler(chatUpdate) {
     }
 }
 
-// ============= MENSAJES DE ERROR (DFAIL) CON ESTILO =============
 global.dfail = async (type, m, conn) => {
     const messages = {
         rowner: `> . ﹡ ﹟ 🔒 ׄ ⬭ *Acceso denegado*\n\n*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜👑* ㅤ֢ㅤ⸱ㅤᯭִ*\nׅㅤ𓏸𓈒ㅤׄ *Motivo* :: El comando *${global.comando}* solo puede ser usado por los *creadores del bot*.`,

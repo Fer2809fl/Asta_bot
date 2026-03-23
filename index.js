@@ -12,7 +12,7 @@ import fs, { readdirSync, statSync, unlinkSync, existsSync, mkdirSync, readFileS
 import yargs from 'yargs'
 import { spawn } from 'child_process'
 import lodash from 'lodash'
-import { AstaJadiBot } from './plugins/socket/serbot.js'
+import { AstaJadiBot, autoStartSubBots, startPeriodicCacheClean } from './plugins/socket/serbot.js'
 import chalk from 'chalk'
 import syntaxerror from 'syntax-error'
 import pino from 'pino'
@@ -36,11 +36,11 @@ if (!global.conns) global.conns = []
 if (!global.subBotsData) global.subBotsData = new Map()
 
 global.supConfig = {
-  maxSubBots: 100,
-  sessionTime: 45,
-  cooldown: 120,
-  autoClean: true,
-  folder: "Sessions/SubBot",
+    maxSubBots: 100,
+    sessionTime: 45,
+    cooldown: 120,
+    autoClean: true,
+    folder: "Sessions/SubBot",
 }
 
 const { CONNECTING } = ws
@@ -51,27 +51,27 @@ const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 let { say } = cfonts
 console.log(chalk.magentaBright('\n▶ Iniciando Asta Bot...'))
 say('Asta Bot', {
-  font: 'block',
-  align: 'center',
-  gradient: ['red', 'magenta']
+    font: 'block',
+    align: 'center',
+    gradient: ['red', 'magenta']
 })
 say('By Fernando', {
-  font: 'tiny',
-  align: 'center',
-  colors: ['yellow', 'green']
+    font: 'tiny',
+    align: 'center',
+    colors: ['yellow', 'green']
 })
 
 protoType()
 serialize()
 
 global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
-  return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString()
+    return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString()
 }
 global.__dirname = function dirname(pathURL) {
-  return path.dirname(global.__filename(pathURL, true))
+    return path.dirname(global.__filename(pathURL, true))
 }
 global.__require = function require(dir = import.meta.url) {
-  return createRequire(dir)
+    return createRequire(dir)
 }
 
 global.timestamp = { start: new Date }
@@ -82,25 +82,25 @@ global.prefix = new RegExp('^[#!./-]')
 global.db = new Low(/https?:\/\//.test(opts['db'] || '') ? new cloudDBAdapter(opts['db']) : new JSONFile('database.json'))
 global.DATABASE = global.db
 global.loadDatabase = async function loadDatabase() {
-  if (global.db.READ) {
-    return new Promise((resolve) => setInterval(async function() {
-      if (!global.db.READ) {
-        clearInterval(this)
-        resolve(global.db.data == null ? global.loadDatabase() : global.db.data)
-      }
-    }, 1 * 1000))
-  }
-  if (global.db.data !== null) return
-  global.db.READ = true
-  await global.db.read().catch(console.error)
-  global.db.READ = null
-  global.db.data = {
-    users: {},
-    chats: {},
-    settings: {},
-    ...(global.db.data || {})
-  }
-  global.db.chain = chain(global.db.data)
+    if (global.db.READ) {
+        return new Promise((resolve) => setInterval(async function () {
+            if (!global.db.READ) {
+                clearInterval(this)
+                resolve(global.db.data == null ? global.loadDatabase() : global.db.data)
+            }
+        }, 1 * 1000))
+    }
+    if (global.db.data !== null) return
+    global.db.READ = true
+    await global.db.read().catch(console.error)
+    global.db.READ = null
+    global.db.data = {
+        users: {},
+        chats: {},
+        settings: {},
+        ...(global.db.data || {})
+    }
+    global.db.chain = chain(global.db.data)
 }
 loadDatabase()
 
@@ -118,106 +118,180 @@ const question = (texto) => new Promise((resolver) => rl.question(texto, resolve
 let opcion
 
 if (methodCodeQR) {
-  opcion = '1'
+    opcion = '1'
 }
 if (!methodCodeQR && !methodCode && !fs.existsSync(`./${global.sessions}/creds.json`)) {
-  do {
-    opcion = await question(chalk.bold.white("Seleccione opción:\n") + chalk.blueBright("1. QR\n") + chalk.cyan("2. Código\n▶▶▶ "))
-    if (!/^[1-2]$/.test(opcion)) {
-      console.log(chalk.bold.redBright(`✖ Solo 1 o 2`))
-    }
-  } while (opcion !== '1' && opcion !== '2' || fs.existsSync(`./${global.sessions}/creds.json`))
+    do {
+        opcion = await question(chalk.bold.white("Seleccione opción:\n") + chalk.blueBright("1. QR\n") + chalk.cyan("2. Código\n▶▶▶ "))
+        if (!/^[1-2]$/.test(opcion)) {
+            console.log(chalk.bold.redBright(`✖ Solo 1 o 2`))
+        }
+    } while (opcion !== '1' && opcion !== '2' || fs.existsSync(`./${global.sessions}/creds.json`))
 }
 
 console.info = () => {}
 
 const connectionOptions = {
-  logger: pino({ level: 'silent' }),
-  printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
-  mobile: MethodMobile,
-  browser: ["Ubuntu", "Chrome", "20.0.04"],
-  auth: {
-    creds: state.creds,
-    keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
-  },
-  generateHighQualityLinkPreview: true,
-  msgRetryCounterCache,
-  userDevicesCache,
-  version,
+    logger: pino({ level: 'silent' }),
+    printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
+    mobile: MethodMobile,
+    browser: ["Ubuntu", "Chrome", "20.0.04"],
+    auth: {
+        creds: state.creds,
+        keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
+    },
+    generateHighQualityLinkPreview: true,
+    msgRetryCounterCache,
+    userDevicesCache,
+    version,
 }
 
 global.conn = makeWASocket(connectionOptions)
 conn.ev.on("creds.update", saveCreds)
 
 if (!fs.existsSync(`./${global.sessions}/creds.json`)) {
-  if (opcion === '2' || methodCode) {
-    console.log(chalk.yellow('[⚡] Modo código activado'))
-    
-    if (!conn.authState.creds.registered) {
-      let addNumber
-      if (!!phoneNumber) {
-        addNumber = phoneNumber.replace(/[^0-9]/g, '')
-      } else {
-        do {
-          phoneNumber = await question(chalk.bgBlack(chalk.bold.greenBright(`[📱] Número WhatsApp:\n▶▶▶ `)))
-          phoneNumber = phoneNumber.replace(/\D/g, '')
-          if (!phoneNumber.startsWith('+')) phoneNumber = `+${phoneNumber}`
-        } while (!await isValidPhoneNumber(phoneNumber))
-        rl.close()
-        addNumber = phoneNumber.replace(/\D/g, '')
-      }
+    if (opcion === '2' || methodCode) {
+        console.log(chalk.yellow('[⚡] Modo código activado'))
 
-      console.log(chalk.cyan('[⏳] Generando código...'))
-      
-      try {
-        const cleanNumber = addNumber.replace('+', '')
-        let codeBot = await conn.requestPairingCode(cleanNumber)
-        
-        if (codeBot) {
-          codeBot = codeBot?.match(/.{1,4}/g)?.join("-") || codeBot
-          console.log(chalk.bold.white(chalk.bgMagenta(`\n═══════════════════════`)))
-          console.log(chalk.bold.white(chalk.bgMagenta(`      📲 CÓDIGO WhatsApp   `)))
-          console.log(chalk.bold.white(chalk.bgMagenta(`═══════════════════════`)))
-          console.log(chalk.bold.white(chalk.bgGreen(`      ${codeBot}      `)))
+        if (!conn.authState.creds.registered) {
+            let addNumber
+            if (!!phoneNumber) {
+                addNumber = phoneNumber.replace(/[^0-9]/g, '')
+            } else {
+                do {
+                    phoneNumber = await question(chalk.bgBlack(chalk.bold.greenBright(`[📱] Número WhatsApp:\n▶▶▶ `)))
+                    phoneNumber = phoneNumber.replace(/\D/g, '')
+                    if (!phoneNumber.startsWith('+')) phoneNumber = `+${phoneNumber}`
+                } while (!await isValidPhoneNumber(phoneNumber))
+                rl.close()
+                addNumber = phoneNumber.replace(/\D/g, '')
+            }
+
+            console.log(chalk.cyan('[⏳] Generando código...'))
+
+            try {
+                const cleanNumber = addNumber.replace('+', '')
+                let codeBot = await conn.requestPairingCode(cleanNumber)
+
+                if (codeBot) {
+                    codeBot = codeBot?.match(/.{1,4}/g)?.join("-") || codeBot
+                    console.log(chalk.bold.white(chalk.bgMagenta(`\n═══════════════════════`)))
+                    console.log(chalk.bold.white(chalk.bgMagenta(`      📲 CÓDIGO WhatsApp   `)))
+                    console.log(chalk.bold.white(chalk.bgMagenta(`═══════════════════════`)))
+                    console.log(chalk.bold.white(chalk.bgGreen(`      ${codeBot}      `)))
+                }
+            } catch (error) {
+                console.error(chalk.red(`✖ Error: ${error.message}`))
+            }
         }
-      } catch (error) {
-        console.error(chalk.red(`✖ Error: ${error.message}`))
-      }
     }
-  }
 }
 
 conn.isInit = false
 conn.well = false
 
+// Flag para que el auto-inicio de subbots solo ocurra 1 vez
+let subBotsAutoStarted = false
+
 if (!opts['test']) {
-  setInterval(async () => {
-    if (global.db.data) await global.db.write().catch(() => {})
-  }, 60 * 1000)
+    setInterval(async () => {
+        if (global.db.data) await global.db.write().catch(() => {})
+    }, 60 * 1000)
+}
+
+// ============= RECONEXIÓN DE SUBBOTS AL REINICIAR =============
+async function reconnectAllSubBots() {
+    const subBotFolder = global.supConfig?.folder || 'Sessions/SubBot'
+    
+    if (!existsSync(subBotFolder)) {
+        console.log(chalk.gray('📭 No hay subbots guardados para reconectar.'))
+        return
+    }
+
+    const sessions = readdirSync(subBotFolder).filter(f => {
+        const fullPath = path.join(subBotFolder, f)
+        return statSync(fullPath).isDirectory() &&
+               existsSync(path.join(fullPath, 'creds.json'))
+    })
+
+    if (!sessions.length) {
+        console.log(chalk.gray('📭 No hay sesiones de subbots guardadas.'))
+        return
+    }
+
+    console.log(chalk.cyan(`\n🔄 Reconectando ${sessions.length} subbot(s) guardados...`))
+
+    for (const userId of sessions) {
+        try {
+            const sessionPath = path.join(subBotFolder, userId)
+            const configPath = path.join(sessionPath, 'config.json')
+            let savedConfig = {}
+            
+            if (existsSync(configPath)) {
+                savedConfig = JSON.parse(readFileSync(configPath, 'utf-8'))
+            }
+            
+            console.log(chalk.blue(`  ↳ Reconectando: ${userId}`))
+            
+            await AstaJadiBot({
+                pathAstaJadiBot: sessionPath,
+                m: null,
+                conn: global.conn,
+                args: [],
+                usedPrefix: global.prefox || '#',
+                command: 'qr',
+                userId,
+                maxReconnectAttempts: 5,
+                isReconnect: true,
+                isAutoStart: true,
+                savedConfig
+            })
+            
+            await new Promise(r => setTimeout(r, 2000))
+        } catch (e) {
+            console.error(chalk.red(`  ✖ Error reconectando ${userId}: ${e.message}`))
+        }
+    }
+    
+    console.log(chalk.green('✅ Proceso de reconexión de subbots finalizado.\n'))
 }
 
 // ============= MANEJO DE CONEXIÓN =============
 async function connectionUpdate(update) {
-  const { connection, lastDisconnect } = update
-  
-  if (connection === "open") {
-    const userName = conn.user.name || conn.user.verifiedName || "Usuario"
-    console.log(chalk.bold.greenBright(`\n═══════════════════════`))
-    console.log(chalk.bold.greenBright(`   ✅ BOT CONECTADO   `))
-    console.log(chalk.bold.greenBright(`═══════════════════════`))
-    console.log(chalk.cyan(`👤 ${userName}`))
-    console.log(chalk.cyan(`📱 ${conn.user.id.split(':')[0]}`))
-    console.log(chalk.gray(`🕐 ${new Date().toLocaleString('es-MX')}\n`))
-  }
-  
-  if (connection === "close") {
-    const code = lastDisconnect?.error?.output?.statusCode || lastDisconnect?.error?.output?.payload?.statusCode
-    if (code && code !== DisconnectReason.loggedOut && conn?.ws.socket == null) {
-      await global.reloadHandler(true).catch(console.error)
+    const { connection, lastDisconnect } = update
+
+    if (connection === "open") {
+        const userName = conn.user.name || conn.user.verifiedName || "Usuario"
+        console.log(chalk.bold.greenBright(`\n═══════════════════════`))
+        console.log(chalk.bold.greenBright(`   ✅ BOT CONECTADO   `))
+        console.log(chalk.bold.greenBright(`═══════════════════════`))
+        console.log(chalk.cyan(`👤 ${userName}`))
+        console.log(chalk.cyan(`📱 ${conn.user.id.split(':')[0]}`))
+        console.log(chalk.gray(`🕐 ${new Date().toLocaleString('es-MX')}\n`))
+
+        // ===== AUTO-INICIO DE SUBBOTS (solo la primera conexión) =====
+        if (!subBotsAutoStarted) {
+            subBotsAutoStarted = true
+            setTimeout(async () => {
+                try {
+                    startPeriodicCacheClean()
+                    console.log(chalk.cyan('🧹 Limpieza periódica de caché activada'))
+                    await reconnectAllSubBots()
+                } catch (e) {
+                    console.error(chalk.red('✖ Error al reconectar subbots:'), e.message)
+                }
+            }, 3000)
+        }
     }
-    console.log(chalk.yellow("🔄 Reconectando..."))
-    await global.reloadHandler(true).catch(console.error)
-  }
+
+    if (connection === "close") {
+        const code = lastDisconnect?.error?.output?.statusCode || lastDisconnect?.error?.output?.payload?.statusCode
+        if (code && code !== DisconnectReason.loggedOut && conn?.ws.socket == null) {
+            await global.reloadHandler(true).catch(console.error)
+        }
+        console.log(chalk.yellow("🔄 Reconectando bot principal..."))
+        await global.reloadHandler(true).catch(console.error)
+    }
 }
 
 // ============= MANEJO DE ERRORES =============
@@ -225,218 +299,215 @@ process.on('uncaughtException', console.error)
 let isInit = true
 let handler = await import('./handler.js')
 
-global.reloadHandler = async function(restartConn) {
-  try {
-    const Handler = await import(`./handler.js?update=${Date.now()}`).catch(console.error)
-    if (Object.keys(Handler || {}).length) handler = Handler
-  } catch (e) {
-    console.error(e)
-  }
-  
-  if (restartConn) {
-    const oldChats = global.conn.chats
-    try { global.conn.ws.close() } catch {}
-    conn.ev.removeAllListeners()
-    global.conn = makeWASocket(connectionOptions, { chats: oldChats })
-    isInit = true
-  }
-  
-  if (!isInit) {
-    conn.ev.off('messages.upsert', conn.handler)
-    conn.ev.off('connection.update', conn.connectionUpdate)
-    conn.ev.off('creds.update', conn.credsUpdate)
-  }
-  
-  conn.handler = handler.handler.bind(global.conn)
-  conn.connectionUpdate = connectionUpdate.bind(global.conn)
-  conn.credsUpdate = saveCreds.bind(global.conn, true)
-  
-  conn.ev.on('messages.upsert', conn.handler)
-  conn.ev.on('connection.update', conn.connectionUpdate)
-  conn.ev.on('creds.update', conn.credsUpdate)
-  
-  isInit = false
-  return true
+global.reloadHandler = async function (restartConn) {
+    try {
+        const Handler = await import(`./handler.js?update=${Date.now()}`).catch(console.error)
+        if (Object.keys(Handler || {}).length) handler = Handler
+    } catch (e) {
+        console.error(e)
+    }
+
+    if (restartConn) {
+        const oldChats = global.conn.chats
+        try { global.conn.ws.close() } catch {}
+        conn.ev.removeAllListeners()
+        global.conn = makeWASocket(connectionOptions, { chats: oldChats })
+        isInit = true
+    }
+
+    if (!isInit) {
+        conn.ev.off('messages.upsert', conn.handler)
+        conn.ev.off('connection.update', conn.connectionUpdate)
+        conn.ev.off('creds.update', conn.credsUpdate)
+    }
+
+    conn.handler = handler.handler.bind(global.conn)
+    conn.connectionUpdate = connectionUpdate.bind(global.conn)
+    conn.credsUpdate = saveCreds.bind(global.conn, true)
+
+    conn.ev.on('messages.upsert', conn.handler)
+    conn.ev.on('connection.update', conn.connectionUpdate)
+    conn.ev.on('creds.update', conn.credsUpdate)
+
+    isInit = false
+    return true
 }
 
 process.on('unhandledRejection', (reason) => {
-  console.error("⚠ Error:", reason)
+    console.error("⚠ Error:", reason)
 })
 
 // ============= CARGA DE PLUGINS =============
 function getPluginFiles(dir, baseDir = dir) {
-  let results = []
-  if (!existsSync(dir)) return results
-  
-  const items = readdirSync(dir, { withFileTypes: true })
-  
-  for (const item of items) {
-    const fullPath = join(dir, item.name)
-    const relativePath = path.relative(baseDir, fullPath).replace(/\\/g, '/')
-    
-    if (item.isDirectory()) {
-      results = results.concat(getPluginFiles(fullPath, baseDir))
-    } else if (item.isFile() && /\.js$/.test(item.name)) {
-      results.push({
-        fullPath,
-        relativePath,
-        folder: path.relative(__dirname, baseDir).replace(/\\/g, '/'),
-        filename: item.name
-      })
+    let results = []
+    if (!existsSync(dir)) return results
+
+    const items = readdirSync(dir, { withFileTypes: true })
+
+    for (const item of items) {
+        const fullPath = join(dir, item.name)
+        const relativePath = path.relative(baseDir, fullPath).replace(/\\/g, '/')
+
+        if (item.isDirectory()) {
+            results = results.concat(getPluginFiles(fullPath, baseDir))
+        } else if (item.isFile() && /\.js$/.test(item.name)) {
+            results.push({
+                fullPath,
+                relativePath,
+                folder: path.relative(__dirname, baseDir).replace(/\\/g, '/'),
+                filename: item.name
+            })
+        }
     }
-  }
-  
-  return results
+
+    return results
 }
 
 const pluginFolders = ['./plugins', './plugins2', './plugins3', './plugins4', './plugins5']
 global.plugins = {}
 
 async function filesInit() {
-  console.log(chalk.bold.cyan('\n📦 Cargando plugins...'))
+    console.log(chalk.bold.cyan('\n📦 Cargando plugins...'))
 
-  let total = 0
-  let errors = 0
-  
-  for (const folder of pluginFolders) {
-    const folderPath = join(__dirname, folder)
-    if (!existsSync(folderPath)) continue
+    let total = 0
+    let errors = 0
 
-    const pluginFiles = getPluginFiles(folderPath)
-    
-    for (const file of pluginFiles) {
-      const pluginKey = `${folder}/${file.relativePath}`
-      try {
-        // FIX WINDOWS: convertir ruta absoluta a file:// URL
-        const fileUrl = pathToFileURL(file.fullPath).href
-        const module = await import(fileUrl)
-        const plugin = module.default !== undefined ? module.default : module
-        if (plugin && (typeof plugin === 'function' || typeof plugin === 'object')) {
-          global.plugins[pluginKey] = plugin
-          total++
-        } else {
-          console.error(chalk.red(`✖ ${pluginKey}`) + chalk.gray(' (sin export válido)'))
-          errors++
+    for (const folder of pluginFolders) {
+        const folderPath = join(__dirname, folder)
+        if (!existsSync(folderPath)) continue
+
+        const pluginFiles = getPluginFiles(folderPath)
+
+        for (const file of pluginFiles) {
+            const pluginKey = `${folder}/${file.relativePath}`
+            try {
+                const fileUrl = pathToFileURL(file.fullPath).href
+                const module = await import(fileUrl)
+                const plugin = module.default !== undefined ? module.default : module
+                if (plugin && (typeof plugin === 'function' || typeof plugin === 'object')) {
+                    global.plugins[pluginKey] = plugin
+                    total++
+                } else {
+                    console.error(chalk.red(`✖ ${pluginKey}`) + chalk.gray(' (sin export válido)'))
+                    errors++
+                }
+            } catch (e) {
+                console.error(chalk.red(`✖ ${pluginKey}`))
+                console.error(chalk.gray(`  → ${e.message}`))
+                errors++
+            }
         }
-      } catch (e) {
-        console.error(chalk.red(`✖ ${pluginKey}`))
-        console.error(chalk.gray(`  → ${e.message}`))
-        errors++
-      }
-    }
-    
-    if (pluginFiles.length > 0) {
-      console.log(chalk.green(`✅ ${folder}: ${pluginFiles.length} archivos`))
-    }
-  }
 
-  console.log(chalk.bold.green(`\n✨ Total cargados: ${total} plugins`))
-  if (errors > 0) console.log(chalk.yellow(`⚠ Fallaron: ${errors} plugins`))
-  console.log()
+        if (pluginFiles.length > 0) {
+            console.log(chalk.green(`✅ ${folder}: ${pluginFiles.length} archivos`))
+        }
+    }
+
+    console.log(chalk.bold.green(`\n✨ Total cargados: ${total} plugins`))
+    if (errors > 0) console.log(chalk.yellow(`⚠ Fallaron: ${errors} plugins`))
+    console.log()
 }
 
 filesInit().catch(console.error)
 
 // ============= RECARGA AUTOMÁTICA =============
 global.reload = async (_ev, filename) => {
-  if (!/\.js$/.test(filename)) return
+    if (!/\.js$/.test(filename)) return
 
-  for (const folder of pluginFolders) {
-    const folderPath = join(__dirname, folder)
-    if (!existsSync(folderPath)) continue
+    for (const folder of pluginFolders) {
+        const folderPath = join(__dirname, folder)
+        if (!existsSync(folderPath)) continue
 
-    const searchFile = (dir, baseDir = dir) => {
-      const items = readdirSync(dir, { withFileTypes: true })
-      for (const item of items) {
-        const fullPath = join(dir, item.name)
-        const relativePath = path.relative(baseDir, fullPath).replace(/\\/g, '/')
-        
-        if (item.isDirectory()) {
-          const found = searchFile(fullPath, baseDir)
-          if (found) return found
-        } else if (item.name === filename) {
-          return { fullPath, relativePath }
+        const searchFile = (dir, baseDir = dir) => {
+            const items = readdirSync(dir, { withFileTypes: true })
+            for (const item of items) {
+                const fullPath = join(dir, item.name)
+                const relativePath = path.relative(baseDir, fullPath).replace(/\\/g, '/')
+
+                if (item.isDirectory()) {
+                    const found = searchFile(fullPath, baseDir)
+                    if (found) return found
+                } else if (item.name === filename) {
+                    return { fullPath, relativePath }
+                }
+            }
+            return null
         }
-      }
-      return null
+
+        const fileInfo = searchFile(folderPath)
+        if (fileInfo) {
+            const pluginKey = `${folder}/${fileInfo.relativePath}`
+
+            const err = syntaxerror(readFileSync(fileInfo.fullPath), filename, {
+                sourceType: 'module',
+                allowAwaitOutsideFunction: true,
+            })
+
+            if (err) {
+                delete global.plugins[pluginKey]
+                return
+            }
+
+            try {
+                const fileUrl = pathToFileURL(fileInfo.fullPath).href + `?update=${Date.now()}`
+                const module = await import(fileUrl)
+                const plugin = module.default !== undefined ? module.default : module
+                global.plugins[pluginKey] = plugin
+            } catch (e) {
+                console.error(chalk.red(`✖ Error recargando ${pluginKey}: ${e.message}`))
+                delete global.plugins[pluginKey]
+            }
+            return
+        }
     }
 
-    const fileInfo = searchFile(folderPath)
-    if (fileInfo) {
-      const pluginKey = `${folder}/${fileInfo.relativePath}`
-      const isUpdate = pluginKey in global.plugins
-
-      const err = syntaxerror(readFileSync(fileInfo.fullPath), filename, {
-        sourceType: 'module',
-        allowAwaitOutsideFunction: true,
-      })
-
-      if (err) {
-        delete global.plugins[pluginKey]
-        return
-      }
-
-      try {
-        // FIX WINDOWS: usar file:// URL
-        const fileUrl = pathToFileURL(fileInfo.fullPath).href + `?update=${Date.now()}`
-        const module = await import(fileUrl)
-        const plugin = module.default !== undefined ? module.default : module
-        global.plugins[pluginKey] = plugin
-      } catch (e) {
-        console.error(chalk.red(`✖ Error recargando ${pluginKey}: ${e.message}`))
-        delete global.plugins[pluginKey]
-      }
-      return
+    const existingKey = Object.keys(global.plugins).find(key => key.endsWith(`/${filename}`))
+    if (existingKey) {
+        delete global.plugins[existingKey]
     }
-  }
-
-  const existingKey = Object.keys(global.plugins).find(key => key.endsWith(`/${filename}`))
-  if (existingKey) {
-    delete global.plugins[existingKey]
-  }
 }
 
 Object.freeze(global.reload)
 
 for (const folder of pluginFolders) {
-  const folderPath = join(__dirname, folder)
-  if (existsSync(folderPath)) {
-    watch(folderPath, { recursive: true }, global.reload)
-  }
+    const folderPath = join(__dirname, folder)
+    if (existsSync(folderPath)) {
+        watch(folderPath, { recursive: true }, global.reload)
+    }
 }
 
 // ============= INICIAR HANDLER =============
 await global.reloadHandler()
 
-// ============= LIMPIEZA AUTOMÁTICA =============
+// ============= LIMPIEZA AUTOMÁTICA DE TMP =============
 setInterval(() => {
-  const tmpDir = join(__dirname, 'tmp')
-  if (existsSync(tmpDir)) {
-    const files = readdirSync(tmpDir)
-    for (const file of files) {
-      try {
-        const filePath = join(tmpDir, file)
-        const stats = statSync(filePath)
-        if (Date.now() - stats.mtimeMs > 5 * 60 * 1000) {
-          unlinkSync(filePath)
+    const tmpDir = join(__dirname, 'tmp')
+    if (existsSync(tmpDir)) {
+        const files = readdirSync(tmpDir)
+        for (const file of files) {
+            try {
+                const filePath = join(tmpDir, file)
+                const stats = statSync(filePath)
+                if (Date.now() - stats.mtimeMs > 5 * 60 * 1000) {
+                    unlinkSync(filePath)
+                }
+            } catch {}
         }
-      } catch {}
     }
-  }
 }, 10 * 60 * 1000)
 
 // ============= FUNCIONES AUXILIARES =============
 async function isValidPhoneNumber(number) {
-  try {
-    number = number.replace(/\s+/g, '')
-    if (number.startsWith('+521')) {
-      number = number.replace('+521', '+52')
+    try {
+        number = number.replace(/\s+/g, '')
+        if (number.startsWith('+521')) {
+            number = number.replace('+521', '+52')
+        }
+        const parsedNumber = phoneUtil.parseAndKeepRawInput(number)
+        return phoneUtil.isValidNumber(parsedNumber)
+    } catch {
+        return false
     }
-    const parsedNumber = phoneUtil.parseAndKeepRawInput(number)
-    return phoneUtil.isValidNumber(parsedNumber)
-  } catch {
-    return false
-  }
 }
 
 initializeResourceSystem()
