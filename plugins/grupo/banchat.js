@@ -1,4 +1,4 @@
-let handler = async (m, { conn, usedPrefix, command, args }) => {
+let handler = async (m, { conn, usedPrefix, command, args, isROwner, isOwner, isAdmin }) => {
     let chat = global.db.data.chats[m.chat]
 
     if (command === 'bot') {
@@ -15,8 +15,18 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
             return conn.reply(m.chat, info, m)
         }
 
+        // Solo owners y admins pueden usar bot on/off
+        if (!isROwner && !isOwner && !isAdmin) {
+            return conn.reply(m.chat,
+                `> . ﹡ ﹟ 🔒 ׄ ⬭ *ᴀᴄᴄᴇsᴏ ᴅᴇɴᴇɢᴀᴅᴏ*\n\n` +
+                `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ 🚫 ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
+                `ׅㅤ𓏸𓈒ㅤׄ *Motivo* :: Solo los administradores pueden gestionar el bot.`, m)
+        }
+
         // Desactivar Bot
         if (args[0].toLowerCase() === 'off') {
+            // El owner principal SIEMPRE puede desactivar
+            // Los admins normales NO pueden desactivar si ya está activo y el owner no lo permite
             if (chat.isBanned) {
                 return conn.reply(m.chat, 
                     `> . ﹡ ﹟ ⚠️ ׄ ⬭ *ᴀᴅᴠᴇʀᴛᴇɴᴄɪᴀ*\n\n` +
@@ -51,6 +61,7 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
 handler.help = ['bot']
 handler.tags = ['grupo']
 handler.command = ['bot']
-handler.admin = true
+// REMOVIDO handler.admin = true — el check de permisos se hace dentro del handler
+// para que el owner siempre pueda activarlo aunque el bot esté "desactivado"
 
 export default handler
