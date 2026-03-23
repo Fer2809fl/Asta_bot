@@ -1,37 +1,8 @@
 import axios from 'axios'
-import fetch from 'node-fetch'
-
-async function getRcanal() {
-    try {
-        const thumb = await (await fetch(global.icono)).buffer()
-        return {
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-                newsletterJid: global.channelRD?.id || "120363399175402285@newsletter",
-                serverMessageId: '',
-                newsletterName: global.channelRD?.name || "『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』"
-            },
-            externalAdReply: {
-                title: global.botname || 'ᴀsᴛᴀ-ʙᴏᴛ',
-                body: global.dev || 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ғᴇʀɴᴀɴᴅᴏ',
-                mediaType: 1,
-                mediaUrl: global.redes,
-                sourceUrl: global.redes,
-                thumbnail: thumb,
-                showAdAttribution: false,
-                containsAutoReply: true,
-                renderLargerThumbnail: false
-            }
-        }
-    } catch { return {} }
-}
 
 const handler = async (m, { conn, text, usedPrefix }) => {
-    const rcanal = await getRcanal()
-
     if (!text) return conn.sendMessage(m.chat, {
-        text: `> . ﹡ ﹟ 🎵 ׄ ⬭ *ᴛɪᴋᴛᴏᴋ ᴅᴏᴡɴʟᴏᴀᴅ*\n\n*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜📥* ㅤ֢ㅤ⸱ㅤᯭִ*\nׅㅤ𓏸𓈒ㅤׄ *ᴜsᴏ* :: ${usedPrefix}tiktok <enlace o búsqueda>\nׅㅤ𓏸𓈒ㅤׄ *ᴇᴊᴇᴍᴘʟᴏ* :: ${usedPrefix}tiktok https://tiktok.com/...\nׅㅤ𓏸𓈒ㅤׄ *ʙᴜsᴄᴀʀ* :: ${usedPrefix}tiktok baile viral`,
-        contextInfo: rcanal
+        text: `> . ﹡ ﹟ 🎵 ׄ ⬭ *ᴛɪᴋᴛᴏᴋ ᴅᴏᴡɴʟᴏᴀᴅ*\n\n*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜📥* ㅤ֢ㅤ⸱ㅤᯭִ*\nׅㅤ𓏸𓈒ㅤׄ *ᴜsᴏ* :: ${usedPrefix}tiktok <enlace o búsqueda>\nׅㅤ𓏸𓈒ㅤׄ *ᴇᴊᴇᴍᴘʟᴏ* :: ${usedPrefix}tiktok https://tiktok.com/...\nׅㅤ𓏸𓈒ㅤׄ *ʙᴜsᴄᴀʀ* :: ${usedPrefix}tiktok baile viral`
     }, { quoted: m })
 
     const isUrl = /(?:https:?\/{2})?(?:www\.|vm\.|vt\.|t\.)?tiktok\.com\/([^\s&]+)/gi.test(text)
@@ -41,11 +12,10 @@ const handler = async (m, { conn, text, usedPrefix }) => {
             const res = await axios.get(`https://www.tikwm.com/api/?url=${encodeURIComponent(text)}?hd=1`)
             const data = res.data?.data
             if (!data?.play) return conn.sendMessage(m.chat, {
-                text: `ׅㅤ𓏸𓈒ㅤׄ ❌ *ᴇɴʟᴀᴄᴇ ɪɴᴠᴀ́ʟɪᴅᴏ* :: sɪɴ ᴄᴏɴᴛᴇɴɪᴅᴏ ᴅᴇsᴄᴀʀɢᴀʙʟᴇ`,
-                contextInfo: rcanal
+                text: `ׅㅤ𓏸𓈒ㅤׄ ❌ *ᴇɴʟᴀᴄᴇ ɪɴᴠᴀ́ʟɪᴅᴏ* :: sɪɴ ᴄᴏɴᴛᴇɴɪᴅᴏ ᴅᴇsᴄᴀʀɢᴀʙʟᴇ`
             }, { quoted: m })
 
-            const { title, duration, author, created_at, type, images, music, play } = data
+            const { title, duration, author, type, images, music, play } = data
             const caption =
                 `> . ﹡ ﹟ 🎵 ׄ ⬭ *ᴛɪᴋᴛᴏᴋ ᴅᴏᴡɴʟᴏᴀᴅ*\n\n` +
                 `*ㅤꨶ〆⁾ ㅤׄㅤ⸼ㅤׄ *͜📱* ㅤ֢ㅤ⸱ㅤᯭִ*\n` +
@@ -54,11 +24,23 @@ const handler = async (m, { conn, text, usedPrefix }) => {
                 `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴜʀᴀᴄɪᴏ́ɴ* :: ${duration || 'N/A'}s`
 
             if (type === 'image' && Array.isArray(images)) {
-                const medias = images.map(url => ({ type: 'image', data: { url }, caption }))
+                // Enviar múltiples imágenes en un solo mensaje
+                const medias = images.map(url => ({ 
+                    type: 'image', 
+                    data: { url }, 
+                    caption 
+                }))
                 await conn.sendSylphy(m.chat, medias, { quoted: m })
-                if (music) await conn.sendMessage(m.chat, { audio: { url: music }, mimetype: 'audio/mp4', fileName: 'tiktok_audio.mp4' }, { quoted: m })
+                if (music) await conn.sendMessage(m.chat, { 
+                    audio: { url: music }, 
+                    mimetype: 'audio/mp4', 
+                    fileName: 'tiktok_audio.mp4' 
+                }, { quoted: m })
             } else {
-                await conn.sendMessage(m.chat, { video: { url: play }, caption }, { quoted: m })
+                await conn.sendMessage(m.chat, { 
+                    video: { url: play }, 
+                    caption
+                }, { quoted: m })
             }
         } else {
             const res = await axios({
@@ -73,18 +55,20 @@ const handler = async (m, { conn, text, usedPrefix }) => {
             })
             const results = res.data?.data?.videos?.filter(v => v.play) || []
             if (results.length < 2) return conn.sendMessage(m.chat, {
-                text: `ׅㅤ𓏸𓈒ㅤׄ ❌ *sɪɴ ʀᴇsᴜʟᴛᴀᴅᴏs* :: ${text}`,
-                contextInfo: rcanal
+                text: `ׅㅤ𓏸𓈒ㅤׄ ❌ *sɪɴ ʀᴇsᴜʟᴛᴀᴅᴏs* :: ${text}`
             }, { quoted: m })
 
+            // Crear array de videos para enviar juntos
             const medias = results.slice(0, 10).map(v => ({
                 type: 'video',
                 data: { url: v.play },
-                caption:
+                caption: 
                     `ׅㅤ𓏸𓈒ㅤׄ *ᴛɪ́ᴛᴜʟᴏ* :: ${v.title || 'N/A'}\n` +
                     `ׅㅤ𓏸𓈒ㅤׄ *ᴀᴜᴛᴏʀ* :: ${v.author?.nickname || 'Desconocido'}\n` +
                     `ׅㅤ𓏸𓈒ㅤׄ *ᴅᴜʀᴀᴄɪᴏ́ɴ* :: ${v.duration || 'N/A'}`
             }))
+            
+            // Enviar todos los videos juntos en un solo mensaje (carrusel)
             await conn.sendSylphy(m.chat, medias, { quoted: m })
         }
 
@@ -92,8 +76,7 @@ const handler = async (m, { conn, text, usedPrefix }) => {
     } catch (e) {
         await m.react('❌')
         await conn.sendMessage(m.chat, {
-            text: `ׅㅤ𓏸𓈒ㅤׄ ⚠️ *ᴇʀʀᴏʀ* :: ${e.message}\nׅㅤ𓏸𓈒ㅤׄ 💡 *ʀᴇᴘᴏʀᴛᴀʀ* :: ${global.etiqueta || 'admin'}`,
-            contextInfo: rcanal
+            text: `ׅㅤ𓏸𓈒ㅤׄ ⚠️ *ᴇʀʀᴏʀ* :: ${e.message}\nׅㅤ𓏸𓈒ㅤׄ 💡 *ʀᴇᴘᴏʀᴛᴀʀ* :: ${global.etiqueta || 'admin'}`
         }, { quoted: m })
     }
 }
