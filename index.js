@@ -1,9 +1,48 @@
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
 
+// ========== SILENCIAR ERRORES INTERNOS DE DEPENDENCIAS ==========
+// Capturar y silenciar errores de libsignal/Baileys
+const originalStderrWrite = process.stderr.write.bind(process.stderr)
+process.stderr.write = (chunk, encoding, callback) => {
+    const msg = chunk.toString()
+    // Filtrar errores de libsignal y Baileys internos
+    if (
+        msg.includes('Bad MAC') ||
+        msg.includes('Session error') ||
+        msg.includes('Failed to decrypt message') ||
+        msg.includes('libsignal') ||
+        msg.includes('SessionCipher') ||
+        msg.includes('MaxListenersExceededWarning') ||
+        msg.includes('node-fetch') ||
+        msg.includes('DeprecationWarning')
+    ) {
+        return true // No escribir nada
+    }
+    return originalStderrWrite(chunk, encoding, callback)
+}
+
+// Desactivar todas las advertencias de Node.js
+process.removeAllListeners('warning')
+process.on('warning', () => {})
+
+// ========== SILENCIAR CONSOLE METHODS ==========
+const originalLog = console.log
+const originalInfo = console.info  
+const originalWarn = console.warn
+
+console.log = (...args) => {
+    const msg = args.join(' ')
+    if (/✖|❌|Error|error|FATAL|fatal|⚠|🚫|Failed|failed|✅ BOT CONECTADO/.test(msg)) {
+        originalLog.apply(console, args)
+    }
+}
+
+console.info = () => {}
+console.warn = () => {}
+
 // ========== IMPORTS PRINCIPALES ==========
 import './settings.js'
 import './plugins/funciones/_allfake.js'
-import cfonts from 'cfonts'
 import { createRequire } from 'module'
 import { fileURLToPath, pathToFileURL } from 'url'
 import { platform } from 'process'
@@ -48,18 +87,31 @@ const { chain } = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
 // ============= INICIO DEL BOT =============
-let { say } = cfonts
-console.log(chalk.magentaBright('\n▶ Iniciando Asta Bot...'))
-say('Asta Bot', {
-    font: 'block',
-    align: 'center',
-    gradient: ['red', 'magenta']
-})
-say('By Fernando', {
-    font: 'tiny',
-    align: 'center',
-    colors: ['yellow', 'green']
-})
+// Forzar codificación UTF-8 en la consola
+process.stdout.setEncoding('utf8');
+
+// Banner ASCII personalizado - usar el nombre directamente de settings.js
+const botName = global.botname || '『𝕬𝖘𝖙𝖆-𝕭𝖔𝖙』';
+const botVersion = global.vs || '1.5';
+const botAuthor = global.etiqueta || '𝕱𝖊𝖗𝖓𝖆𝖓𝖉𝖔';
+
+const banner = `
+   _____    _________________________    __________  __________________
+  /  _  \\  /   _____/\\__    ___/  _  \\   \\______   \\ \\_____ \\__    ___/
+ /  /_\\  \\ \\_____  \\   |    | /  /_\\  \\   |    |  _/ /   |   \\|    |   
+/    |    \\/        \\  |    |/    |    \\  |    |   \\/    |    \\    |   
+\\____|__  /_______  /  |____|\\____|__  /  |______  /\\_______  /____|   
+        \\/        \\/                 \\/          \\/         \\/            
+
+● 『𝒜𝓈𝓉𝒶-𝐵𝑜𝓉』
+  ├─ Version: ${botVersion}
+  └─ Autor: 𝐹𝑒𝓇𝓃𝒶𝓃𝒹𝑜
+
+  By  •  The StudyBots
+`;
+
+originalLog(chalk.cyan(banner));
+originalLog(chalk.gray(`\n▶ Iniciando sistema...\n`));
 
 protoType()
 serialize()
@@ -124,26 +176,37 @@ if (!methodCodeQR && !methodCode && !fs.existsSync(`./${global.sessions}/creds.j
     do {
         opcion = await question(chalk.bold.white("Seleccione opción:\n") + chalk.blueBright("1. QR\n") + chalk.cyan("2. Código\n▶▶▶ "))
         if (!/^[1-2]$/.test(opcion)) {
-            console.log(chalk.bold.redBright(`✖ Solo 1 o 2`))
+            originalLog(chalk.bold.redBright(`✖ Solo 1 o 2`))
         }
     } while (opcion !== '1' && opcion !== '2' || fs.existsSync(`./${global.sessions}/creds.json`))
 }
 
-console.info = () => {}
+// Logger completamente silencioso
+const silentLogger = pino({ level: 'silent' })
 
 const connectionOptions = {
-    logger: pino({ level: 'silent' }),
+    logger: silentLogger,
     printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
     mobile: MethodMobile,
     browser: ["Ubuntu", "Chrome", "20.0.04"],
     auth: {
         creds: state.creds,
-        keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
+        keys: makeCacheableSignalKeyStore(state.keys, silentLogger),
     },
-    generateHighQualityLinkPreview: true,
+    generateHighQualityLinkPreview: false,
     msgRetryCounterCache,
     userDevicesCache,
     version,
+    syncFullHistory: false,
+    fireInitQueries: false,
+    shouldIgnoreJid: () => false,
+    getMessage: async () => undefined,
+    // Opciones adicionales para reducir logs
+    retryRequestDelayMs: 250,
+    maxMsgRetryCount: 5,
+    connectTimeoutMs: 60000,
+    keepAliveIntervalMs: 30000,
+    emitOwnEvents: false,
 }
 
 global.conn = makeWASocket(connectionOptions)
@@ -151,7 +214,7 @@ conn.ev.on("creds.update", saveCreds)
 
 if (!fs.existsSync(`./${global.sessions}/creds.json`)) {
     if (opcion === '2' || methodCode) {
-        console.log(chalk.yellow('[⚡] Modo código activado'))
+        originalLog(chalk.yellow('[⚡] Modo código activado'))
 
         if (!conn.authState.creds.registered) {
             let addNumber
@@ -167,7 +230,7 @@ if (!fs.existsSync(`./${global.sessions}/creds.json`)) {
                 addNumber = phoneNumber.replace(/\D/g, '')
             }
 
-            console.log(chalk.cyan('[⏳] Generando código...'))
+            originalLog(chalk.cyan('[⏳] Generando código...'))
 
             try {
                 const cleanNumber = addNumber.replace('+', '')
@@ -175,10 +238,10 @@ if (!fs.existsSync(`./${global.sessions}/creds.json`)) {
 
                 if (codeBot) {
                     codeBot = codeBot?.match(/.{1,4}/g)?.join("-") || codeBot
-                    console.log(chalk.bold.white(chalk.bgMagenta(`\n═══════════════════════`)))
-                    console.log(chalk.bold.white(chalk.bgMagenta(`      📲 CÓDIGO WhatsApp   `)))
-                    console.log(chalk.bold.white(chalk.bgMagenta(`═══════════════════════`)))
-                    console.log(chalk.bold.white(chalk.bgGreen(`      ${codeBot}      `)))
+                    originalLog(chalk.bold.white(chalk.bgMagenta(`\n═══════════════════════`)))
+                    originalLog(chalk.bold.white(chalk.bgMagenta(`      📲 CÓDIGO WhatsApp   `)))
+                    originalLog(chalk.bold.white(chalk.bgMagenta(`═══════════════════════`)))
+                    originalLog(chalk.bold.white(chalk.bgGreen(`      ${codeBot}      `)))
                 }
             } catch (error) {
                 console.error(chalk.red(`✖ Error: ${error.message}`))
@@ -190,7 +253,6 @@ if (!fs.existsSync(`./${global.sessions}/creds.json`)) {
 conn.isInit = false
 conn.well = false
 
-// Flag para que el auto-inicio de subbots solo ocurra 1 vez
 let subBotsAutoStarted = false
 
 if (!opts['test']) {
@@ -199,40 +261,25 @@ if (!opts['test']) {
     }, 60 * 1000)
 }
 
-// ============= RECONEXIÓN DE SUBBOTS AL REINICIAR =============
+// ============= RECONEXIÓN DE SUBBOTS =============
 async function reconnectAllSubBots() {
     const subBotFolder = global.supConfig?.folder || 'Sessions/SubBot'
-    
-    if (!existsSync(subBotFolder)) {
-        console.log(chalk.gray('📭 No hay subbots guardados para reconectar.'))
-        return
-    }
+    if (!existsSync(subBotFolder)) return
 
     const sessions = readdirSync(subBotFolder).filter(f => {
         const fullPath = path.join(subBotFolder, f)
-        return statSync(fullPath).isDirectory() &&
-               existsSync(path.join(fullPath, 'creds.json'))
+        return statSync(fullPath).isDirectory() && existsSync(path.join(fullPath, 'creds.json'))
     })
 
-    if (!sessions.length) {
-        console.log(chalk.gray('📭 No hay sesiones de subbots guardadas.'))
-        return
-    }
-
-    console.log(chalk.cyan(`\n🔄 Reconectando ${sessions.length} subbot(s) guardados...`))
+    if (!sessions.length) return
 
     for (const userId of sessions) {
         try {
             const sessionPath = path.join(subBotFolder, userId)
             const configPath = path.join(sessionPath, 'config.json')
             let savedConfig = {}
-            
-            if (existsSync(configPath)) {
-                savedConfig = JSON.parse(readFileSync(configPath, 'utf-8'))
-            }
-            
-            console.log(chalk.blue(`  ↳ Reconectando: ${userId}`))
-            
+            if (existsSync(configPath)) savedConfig = JSON.parse(readFileSync(configPath, 'utf-8'))
+
             await AstaJadiBot({
                 pathAstaJadiBot: sessionPath,
                 m: null,
@@ -246,14 +293,11 @@ async function reconnectAllSubBots() {
                 isAutoStart: true,
                 savedConfig
             })
-            
             await new Promise(r => setTimeout(r, 2000))
         } catch (e) {
-            console.error(chalk.red(`  ✖ Error reconectando ${userId}: ${e.message}`))
+            console.error(chalk.red(`✖ Error reconectando ${userId}: ${e.message}`))
         }
     }
-    
-    console.log(chalk.green('✅ Proceso de reconexión de subbots finalizado.\n'))
 }
 
 // ============= MANEJO DE CONEXIÓN =============
@@ -262,20 +306,24 @@ async function connectionUpdate(update) {
 
     if (connection === "open") {
         const userName = conn.user.name || conn.user.verifiedName || "Usuario"
-        console.log(chalk.bold.greenBright(`\n═══════════════════════`))
-        console.log(chalk.bold.greenBright(`   ✅ BOT CONECTADO   `))
-        console.log(chalk.bold.greenBright(`═══════════════════════`))
-        console.log(chalk.cyan(`👤 ${userName}`))
-        console.log(chalk.cyan(`📱 ${conn.user.id.split(':')[0]}`))
-        console.log(chalk.gray(`🕐 ${new Date().toLocaleString('es-MX')}\n`))
+        
+        // Mensaje de conexión estilo limpio consistente con el banner
+        const connectedMsg = `
+● ✅ Bot Conectado
+  ├─ Usuario: ${userName}
+  ├─ Número: ${conn.user.id.split(':')[0]}
+  └─ Hora: ${new Date().toLocaleString('es-MX')}
 
-        // ===== AUTO-INICIO DE SUBBOTS (solo la primera conexión) =====
+  By  •  The StudyBots
+`
+        
+        originalLog(chalk.green(connectedMsg))
+
         if (!subBotsAutoStarted) {
             subBotsAutoStarted = true
             setTimeout(async () => {
                 try {
                     startPeriodicCacheClean()
-                    console.log(chalk.cyan('🧹 Limpieza periódica de caché activada'))
                     await reconnectAllSubBots()
                 } catch (e) {
                     console.error(chalk.red('✖ Error al reconectar subbots:'), e.message)
@@ -289,13 +337,32 @@ async function connectionUpdate(update) {
         if (code && code !== DisconnectReason.loggedOut && conn?.ws.socket == null) {
             await global.reloadHandler(true).catch(console.error)
         }
-        console.log(chalk.yellow("🔄 Reconectando bot principal..."))
+        console.error(chalk.yellow("🔄 Reconectando bot principal..."))
         await global.reloadHandler(true).catch(console.error)
     }
 }
 
 // ============= MANEJO DE ERRORES =============
-process.on('uncaughtException', console.error)
+process.on('uncaughtException', (err) => {
+    // Filtrar errores de libsignal
+    if (err.message && (
+        err.message.includes('Bad MAC') ||
+        err.message.includes('Session error') ||
+        err.message.includes('Failed to decrypt')
+    )) return
+    
+    const errorMsg = `
+● ⚠️ Error Detectado
+  ├─ Tipo: ${err.name || 'Error desconocido'}
+  ├─ Mensaje: ${err.message || 'Sin mensaje'}
+  └─ Hora: ${new Date().toLocaleString('es-MX')}
+
+  By  •  The StudyBots
+`
+    console.error(chalk.red(errorMsg))
+    console.error(err)
+})
+
 let isInit = true
 let handler = await import('./handler.js')
 
@@ -334,7 +401,21 @@ global.reloadHandler = async function (restartConn) {
 }
 
 process.on('unhandledRejection', (reason) => {
-    console.error("⚠ Error:", reason)
+    // Filtrar rechazos de libsignal
+    if (reason && reason.message && (
+        reason.message.includes('Bad MAC') ||
+        reason.message.includes('Session error') ||
+        reason.message.includes('Failed to decrypt')
+    )) return
+    
+    const errorMsg = `
+● ⚠️ Promesa Rechazada
+  ├─ Razón: ${reason || 'Desconocida'}
+  └─ Hora: ${new Date().toLocaleString('es-MX')}
+
+  By  •  The StudyBots
+`
+    console.error(chalk.red(errorMsg))
 })
 
 // ============= CARGA DE PLUGINS =============
@@ -359,7 +440,6 @@ function getPluginFiles(dir, baseDir = dir) {
             })
         }
     }
-
     return results
 }
 
@@ -367,8 +447,6 @@ const pluginFolders = ['./plugins', './plugins2', './plugins3', './plugins4', '.
 global.plugins = {}
 
 async function filesInit() {
-    console.log(chalk.bold.cyan('\n📦 Cargando plugins...'))
-
     let total = 0
     let errors = 0
 
@@ -388,24 +466,18 @@ async function filesInit() {
                     global.plugins[pluginKey] = plugin
                     total++
                 } else {
-                    console.error(chalk.red(`✖ ${pluginKey}`) + chalk.gray(' (sin export válido)'))
                     errors++
                 }
             } catch (e) {
-                console.error(chalk.red(`✖ ${pluginKey}`))
-                console.error(chalk.gray(`  → ${e.message}`))
+                console.error(chalk.red(`✖ Error en ${pluginKey}: ${e.message}`))
                 errors++
             }
         }
-
-        if (pluginFiles.length > 0) {
-            console.log(chalk.green(`✅ ${folder}: ${pluginFiles.length} archivos`))
-        }
     }
 
-    console.log(chalk.bold.green(`\n✨ Total cargados: ${total} plugins`))
-    if (errors > 0) console.log(chalk.yellow(`⚠ Fallaron: ${errors} plugins`))
-    console.log()
+    if (errors > 0) {
+        originalLog(chalk.yellow(`⚠ Plugins con errores: ${errors}`))
+    }
 }
 
 filesInit().catch(console.error)
