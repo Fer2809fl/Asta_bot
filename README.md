@@ -123,12 +123,13 @@ npm start
 
 </details>
 
-<details>
+<details open>
 <summary><strong>📱 Termux</strong> — Manualmente</summary>
 
 ```bash
 termux-setup-storage
-pkg update -y && pkg upgrade -y && pkg install -y git nodejs-lts ffmpeg python make
+pkg update -y && pkg upgrade -y
+pkg install -y git nodejs-lts ffmpeg python make clang sqlite
 ```
 ```bash
 git clone https://github.com/Fer2809fl/Asta_bot
@@ -136,6 +137,24 @@ git clone https://github.com/Fer2809fl/Asta_bot
 ```bash
 cd Asta_bot
 ```
+
+**Antes de instalar, define estas dos variables de entorno** (evitan los errores más comunes de Termux al compilar módulos nativos como `sqlite3` y al resolver `ffmpeg`):
+
+```bash
+export GYP_DEFINES="android_ndk_path=''"
+export FFMPEG_BIN=$(command -v ffmpeg)
+```
+
+Para no tener que escribirlas cada vez que abras Termux, agrégalas a tu perfil una sola vez:
+
+```bash
+echo 'export GYP_DEFINES="android_ndk_path=\x27\x27"' >> ~/.bashrc
+echo 'export FFMPEG_BIN=$(command -v ffmpeg)' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Ahora sí, instala:
+
 ```bash
 npm install
 ```
@@ -190,6 +209,28 @@ cd && cd Asta_bot && npm start
 cd && cd Asta_bot && rm -rf sessions/Owner && npm start
 ```
 
+### ◆ Error al instalar en Termux (`android_ndk_path` / `better-sqlite3` / `sqlite3`)
+
+Si `npm install` falla con algo como `Undefined variable android_ndk_path in binding.gyp` o no encuentra un módulo nativo, es porque `node-gyp` intenta usar el NDK de Android para compilar, y Termux no lo tiene. Haz una reinstalación limpia con las variables correctas:
+
+```bash
+export GYP_DEFINES="android_ndk_path=''"
+export FFMPEG_BIN=$(command -v ffmpeg)
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### ◆ Error `ffmpeg-static install failed: No binary found for architecture`
+
+`ffmpeg-static` no reconoce Android como plataforma, así que necesita que le indiques dónde está el `ffmpeg` real de Termux **antes** de instalar:
+
+```bash
+pkg install -y ffmpeg
+export FFMPEG_BIN=$(command -v ffmpeg)
+rm -rf node_modules package-lock.json
+npm install
+```
+
 ---
 
 ## ◈ Configuración General
@@ -232,4 +273,4 @@ Edita `config.js` en la raíz del proyecto para personalizar:
 </p>
 
 > [Nota]
-> Este bot puede ser editado completamente la única condición es dar los créditos a los creadores 
+> Este bot puede ser editado completamente la única condición es dar los créditos a los creadores
