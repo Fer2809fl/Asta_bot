@@ -1,4 +1,4 @@
-// src/commands/Stickers/brat.js
+// src/commands/Stickers/bratv.js
 import fs from 'fs'
 import path from 'path'
 import ffmpeg from 'fluent-ffmpeg'
@@ -25,14 +25,15 @@ const fetchBuffer = async (url, timeout = 30000) => {
     }
 }
 
-const convertToWebp = (input, output) => new Promise((resolve, reject) => {
+const convertToAnimatedWebp = (input, output) => new Promise((resolve, reject) => {
     ffmpeg(input)
         .outputOptions([
-            '-vf', 'scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000,format=rgba',
-            '-c:v', 'libwebp',
+            '-vf', 'scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000,format=rgba,format=yuva420p',
+            '-c:v', 'libwebp_anim',
             '-preset', 'picture',
             '-compression_level', '6',
-            '-q:v', '70'
+            '-q:v', '70',
+            '-loop', '0'
         ])
         .toFormat('webp')
         .on('end', () => resolve(output))
@@ -42,13 +43,13 @@ const convertToWebp = (input, output) => new Promise((resolve, reject) => {
 
 export default [
     {
-        command: ['brat'],
-        description: 'Crea sticker brat con texto',
+        command: ['bratv'],
+        description: 'Crea sticker brat animado',
         category: 'Stickers',
 
         async execute({ sock, remoteJid, reply, text }) {
             const prompt = text?.trim()
-            if (!prompt) return reply('⚠️ *Falta texto*\n\n> Ejemplo: .brat Hola Mundo')
+            if (!prompt) return reply('⚠️ *Falta texto*\n\n> Ejemplo: .bratv Hola Mundo')
 
             const tmpFiles = []
             const clean = () => tmpFiles.forEach(safeUnlink)
@@ -56,16 +57,16 @@ export default [
             try {
                 await sock.sendMessage(remoteJid, { react: { text: '🕒', key: { remoteJid } } })
 
-                const buffer = await fetchBuffer(`https://skyzxu-brat.hf.space/brat?text=${encodeURIComponent(prompt)}`)
+                const buffer = await fetchBuffer(`https://skyzxu-brat.hf.space/brat-animated?text=${encodeURIComponent(prompt)}`)
 
-                const tmpPng = path.join(tmpDir, `brat-${Date.now()}.png`)
-                tmpFiles.push(tmpPng)
-                fs.writeFileSync(tmpPng, buffer)
+                const tmpMp4 = path.join(tmpDir, `bratv-${Date.now()}.mp4`)
+                tmpFiles.push(tmpMp4)
+                fs.writeFileSync(tmpMp4, buffer)
 
-                const webpPath = path.join(tmpDir, `brat-${Date.now()}.webp`)
+                const webpPath = path.join(tmpDir, `bratv-${Date.now()}.webp`)
                 tmpFiles.push(webpPath)
-                await convertToWebp(tmpPng, webpPath)
-                safeUnlink(tmpPng)
+                await convertToAnimatedWebp(tmpMp4, webpPath)
+                safeUnlink(tmpMp4)
 
                 await sock.sendMessage(remoteJid, { sticker: fs.readFileSync(webpPath) })
                 await sock.sendMessage(remoteJid, { react: { text: '✅', key: { remoteJid } } })
