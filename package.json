@@ -1,0 +1,38 @@
+{
+  "name": "Asta",
+  "version": "1.0.0",
+  "description": "Asta - base mínima de bot de WhatsApp con normalizador LID nativo de @fer2809fl/baileys (sin lidsync)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
+    "@fer2809fl/baileys": "github:Fer2809fl/Baileys",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@google/genai": "^2.8.0",
+    "@vreden/youtube_scraper": "^1.2.9",
+    "axios": "^1.7.7",
+    "btch-downloader": "^6.0.37",
+    "cfonts": "^3.3.0",
+    "chalk": "^5.3.0",
+    "ffmpeg-static": "^5.3.0",
+    "fluent-ffmpeg": "^2.1.3",
+    "jimp": "^0.16.1",
+    "node-cache": "^5.1.2",
+    "node-fetch": "^3.3.2",
+    "pino": "^9.6.0",
+    "qrcode-terminal": "^0.12.0",
+    "yt-search": "^2.12.1",
+    "ytdl-core": "^4.11.5",
+    "sqlite3": "^5.1.7",
+    "konachan-scraper": "git+https://github.com/Neykoor/konachan-scraper.git"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "author": "Fernando",
+  "license": "GLP"
+}
