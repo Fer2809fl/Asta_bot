@@ -232,4 +232,4 @@ Edita `config.js` en la raíz del proyecto para personalizar:
 </p>
 
 > [Nota]
-> Este bot solo puede ser editado completamente la única condición es dar los créditos a los creadores 
+> Este bot puede ser editado completamente la única condición es dar los créditos a los creadores 
