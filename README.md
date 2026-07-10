@@ -165,6 +165,13 @@ termux-wake-lock && npm i -g pm2 && pm2 start index.js --name asta && pm2 save &
 
 </details>
 
+## ◈ Bot 24/7
+
+> si edtas buscando un bot 24/7 de Asta bot solo ve a este número [¡Numero!](https://wa.me/524181450063)**
+>  y pon el comando `#code`
+
+</details>
+
 ---
 
 ## ◈ Solución de Problemas
