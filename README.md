@@ -13,7 +13,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![License](https://img.shields.io/badge/Licencia-GPL-blue)](./LICENSE)
 [![Baileys](https://img.shields.io/badge/Baileys-Multi--Device-25D366?logo=whatsapp&logoColor=white)](https://github.com/Fer2809fl/Baileys)
-[![Repo](https://img.shields.io/github/stars/Fer2809fl/Asta?style=social)](https://github.com/Fer2809fl/Asta_bot)
+[![Repo](https://img.shields.io/github/stars/Fer2809fl/Asta_bot?style=social)](https://github.com/Fer2809fl/Asta_bot)
 
 </p>
 
@@ -230,3 +230,6 @@ Edita `config.js` en la raíz del proyecto para personalizar:
 <p align="center">
   <sub>𓏸𓈒 Asta-Bot ꨶ〆⁾ — Powered By ғᴇʀɴᴀɴᴅᴏ</sub>
 </p>
+
+> [Nota]
+> Este bot solo puede ser editado completamente solo con permiso del owner principal y cualquier edición o toma de código sin dar créditos puede dar consecuencias, si tú deceas tomar el código como tuyo solo da los créditos a los creadores oficiales 
