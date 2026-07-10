@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",
-    "@fer2809fl/baileys": "github:Fer2809fl/Bail",
+    "@fer2809fl/baileys": "github:Fer2809fl/Baileys",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@google/genai": "^2.8.0",
     "@vreden/youtube_scraper": "^1.2.9",
