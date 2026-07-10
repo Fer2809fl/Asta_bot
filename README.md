@@ -109,7 +109,7 @@
 <summary><strong>☁️ Cloud / VPS</strong> — Shell</summary>
 
 ```bash
-git clone https://github.com/Fer2809fl/Asta
+git clone https://github.com/Fer2809fl/Asta_bot
 ```
 ```bash
 cd Asta
