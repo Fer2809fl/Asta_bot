@@ -112,7 +112,7 @@
 git clone https://github.com/Fer2809fl/Asta_bot
 ```
 ```bash
-cd Asta
+cd Asta_bot
 ```
 ```bash
 npm install
@@ -131,10 +131,10 @@ termux-setup-storage
 pkg update -y && pkg upgrade -y && pkg install -y git nodejs-lts ffmpeg python make
 ```
 ```bash
-git clone https://github.com/Fer2809fl/Asta
+git clone https://github.com/Fer2809fl/Asta_bot
 ```
 ```bash
-cd Asta
+cd Asta_bot
 ```
 ```bash
 npm install
@@ -153,15 +153,15 @@ npm start
 > *Ejecutar dentro de la carpeta Asta*
 
 ```bash
-termux-wake-lock && npm i -g pm2 && pm2 start index.js --name asta && pm2 save && pm2 logs
+termux-wake-lock && npm i -g pm2 && pm2 start index.js --name asta_bot && pm2 save && pm2 logs
 ```
 
 | Comando | Acción |
 |---|---|
-| `pm2 delete asta` | Eliminar historial de PM2 |
+| `pm2 delete asta_bot` | Eliminar historial de PM2 |
 | `pm2 logs` | Ver ejecución actual |
-| `pm2 stop asta` | Detener ejecución |
-| `pm2 start asta` | Reiniciar ejecución |
+| `pm2 stop asta_bot` | Detener ejecución |
+| `pm2 start asta_bot` | Reiniciar ejecución |
 
 </details>
 
@@ -179,7 +179,7 @@ termux-wake-lock && npm i -g pm2 && pm2 start index.js --name asta && pm2 save &
 ### ◆ El bot se detuvo
 
 ```bash
-cd && cd Asta && npm start
+cd && cd Asta_bot && npm start
 ```
 
 ### ◆ Nuevo inicio de sesión
@@ -187,7 +187,7 @@ cd && cd Asta && npm start
 > *Detén el bot con `Ctrl` + `Z` + `ENTER` hasta que aparezca `Asta $`*
 
 ```bash
-cd && cd Asta && rm -rf sessions/Owner && npm start
+cd && cd Asta_bot && rm -rf sessions/Owner && npm start
 ```
 
 ---
