@@ -1,6 +1,3 @@
-> [!NOTE]
-> **Este proyecto está en constante evolución. Estamos comprometidos en ofrecer a nuestra comunidad un Bot increíble. Te invitamos a instalarlo y estar al tanto de todas las novedades. [¡Únete a nuestro canal!](https://whatsapp.com/channel/0029Vb7uWR9E50UdCUthCR2B)**
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/Fer2809fl/asta-/refs/heads/main/src/database/menu.jpg" alt="『𝕬𝖘𝖙𝖆』" style="width: 75%; height: auto; max-width: 100px; border-radius: 12px;">
 </p>
@@ -27,6 +24,10 @@
 **『𝕬𝖘𝖙𝖆』** es un bot de WhatsApp multifuncional (Multi-Device) basado en `baileys`. Ofrece economía, gacha, IA, descargas, administración de grupos y mucho más, todo en un solo lugar.
 
 > ◇ Powered By ғᴇʀɴᴀɴᴅᴏ
+
+---
+
+> Este proyecto está en constante evolución. Estamos comprometidos en ofrecer a nuestra comunidad un Bot increíble. Te invitamos a instalarlo y estar al tanto de todas las novedades. [¡Únete a nuestro canal!](https://whatsapp.com/channel/0029Vb7uWR9E50UdCUthCR2B)**
 
 ---
 
@@ -203,7 +204,21 @@ Edita `config.js` en la raíz del proyecto para personalizar:
 
 ---
 
+## ◈ Creador
 
+<p align="center">
+  <img src="https://github.com/Fer2809fl.png" alt="Fernando" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #9b33b0;">
+</p>
+
+<p align="center">
+  <strong style="font-size: 1.5em;">Fernando</strong>
+</p>
+
+<p align="center">
+  <sub>Desarrollador principal de 『𝕬𝖘𝖙𝖆』</sub>
+</p>
+
+---
 
 <p align="center">
   <sub>𓏸𓈒 Asta-Bot ꨶ〆⁾ — Powered By ғᴇʀɴᴀɴᴅᴏ</sub>
