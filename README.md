@@ -232,4 +232,4 @@ Edita `config.js` en la raíz del proyecto para personalizar:
 </p>
 
 > [Nota]
-> Este bot solo puede ser editado completamente solo con permiso del owner principal y cualquier edición o toma de código sin dar créditos puede dar consecuencias, si tú deceas tomar el código como tuyo solo da los créditos a los creadores oficiales 
+> Este bot solo puede ser editado completamente solo con permiso del owner principal y cualquier edición o toma de código sin dar créditos puede dar consecuencias, si tú deceas tomar el código como tuyo solo da los créditos a los creadores oficiales, el bot está protegido con licencia alegal, más información consulta la licencia 
