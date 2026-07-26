@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Fer2809fl/asta-/refs/heads/main/src/database/menu.jpg" alt="『𝕬𝖘𝖙𝖆』" style="width: 75%; height: auto; max-width: 100px; border-radius: 12px;">
+  <img src="https://raw.githubusercontent.com/Fer2809fl/asta-/refs/heads/main/src/database/menu.jpg" alt="『𝕬𝖘𝖆』" style="width: 75%; height: auto; max-width: 100px; border-radius: 10px;">
 </p>
 
 <p align="center">
-  <a href="#">
-    <img title="『𝕬𝖘𝖙𝖆』" src="https://img.shields.io/badge/¡Disfruta de un Bot totalmente gratuito, con múltiples funciones y de código abierto! -purple?colorA=%239b33b0&colorB=%231c007b&style=for-the-badge">
+  <a href="https://github.com/Fer2809fl/Asta_bot">
+    <img title="『𝕬𝖘𝖆』" src="https://img.shields.io/badge/¡Disfruta de un Bot totalmente gratuito, con múltiples funciones y de código abierto! -purple?colorA=%239b33b0&colorB=%23ff0000" alt="Badge">
   </a>
 </p>
 
@@ -13,7 +13,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![License](https://img.shields.io/badge/Licencia-GPL-blue)](./LICENSE)
 [![Baileys](https://img.shields.io/badge/Baileys-Multi--Device-25D366?logo=whatsapp&logoColor=white)](https://github.com/Fer2809fl/Baileys)
-[![Repo](https://img.shields.io/github/stars/Fer2809fl/Asta_bot?style=social)](https://github.com/Fer2809fl/Asta_bot)
+[![Stars](https://img.shields.io/github/stars/Fer2809fl/Asta_bot?style=social)](https://github.com/Fer2809fl/Asta_bot)
 
 </p>
 
@@ -21,13 +21,11 @@
 
 ## ◈ Descripción
 
-**『𝕬𝖘𝖙𝖆』** es un bot de WhatsApp multifuncional (Multi-Device) basado en `baileys`. Ofrece economía, gacha, IA, descargas, administración de grupos y mucho más, todo en un solo lugar.
+**『𝕬𝖘𝖆』** es un bot de WhatsApp multifuncional (Multi-Device) basado en `baileys`. Ofrece economía, gacha, IA, descargas, administración de grupos y mucho más, todo en un solo bot completamente gratuito y de código abierto.
 
-> ◇ Powered By ғᴇʀɴᴀɴᴅᴏ
+> **Powered By** ғᴇʀɴᴀɴᴅᴏ
 
----
-
-> Este proyecto está en constante evolución. Estamos comprometidos en ofrecer a nuestra comunidad un Bot increíble. Te invitamos a instalarlo y estar al tanto de todas las novedades. [¡Únete a nuestro canal!](https://whatsapp.com/channel/0029Vb7uWR9E50UdCUthCR2B)**
+Este proyecto está en **constante evolución**. Estamos comprometidos en ofrecer a nuestra comunidad un bot increíble. Te invitamos a instalarlo y estar al tanto de todas las novedades.
 
 ---
 
@@ -47,19 +45,19 @@
 
 ---
 
-## ◈ Información del Proyecto
+## ◈ Información General
 
 <div align="center">
 
 | Dato | Valor |
 |---|---|
-| ◇ Prefijos | `!` `.` `/` |
-| ◇ Nombre | 『𝕬𝖘𝖙𝖆』 |
-| ◇ Icono | 🤖 |
-| ◇ Marca | 𓏸𓈒 Asta-Bot ꨶ〆⁾ |
-| ◇ Desarrollador | Fernando |
-| ◇ Advertencias Máx. | 3 |
-| ◇ Soporte Total | 50 |
+| **Prefijos** | `!` `.` `/` |
+| **Nombre** | 『𝕬𝖘𝖆』 |
+| **Icono** | 🤖 |
+| **Marca** | 𓏸𓈒 Asta-Bot ꨶ〆⁾ |
+| **Desarrollador** | Fernando |
+| **Advertencias Máx.** | 3 |
+| **Soporte Total** | 50 |
 
 </div>
 
@@ -69,29 +67,19 @@
 
 ### ◆ Propietarios
 
-| Número | Nombre | Estado |
+| Contacto | Nombre | Estado |
 |---|---|---|
-| `5214183357841` | Fernando | ✅ Activo |
-| `5216631079388` | Neykoor | ✅ Activo |
-| `5214181450063` | fernando | ✅ Activo |
+| `+52 14183357841` | Fernando | ✅ Activo |
+| `+52 16631079388` | Neykoor | ✅ Activo |
+| `+52 14181450063` | Fernando | ✅ Activo |
 
-### ◆ Ayudantes
+### ◆ Colaboradores
 
-`584223201386` • `59167062252` • `51939170057` • `18096521129` • `595981286874` • `5217207439397` • `5215632332034`
+`+58 4223201386` • `+59 167062252` • `+51 939170057` • `+1 8096521129` • `+59 5981286874` • `+52 17207439397` • `+52 15632332034`
 
 ---
 
 ## ◈ Enlaces Oficiales
-
-<div align="center">
-
-| Servicio | Enlace |
-|---|---|
-| 📢 Canal Oficial | [Asta Bot Channel](https://whatsapp.com/channel/0029Vb7uWR9E50UdCUthCR2B) |
-| 👥 Grupo de Soporte | [Unirse](https://chat.whatsapp.com/H6uionZcKu9Hpa0CLDrInn) |
-| 💻 Repositorio | [Ver Código](https://github.com/Fer2809fl/Asta_bot) |
-
-</div>
 
 <p align="center">
 
@@ -105,47 +93,36 @@
 
 ## ◈ Instalación
 
-<details>
-<summary><strong>☁️ Cloud / VPS</strong> — Shell</summary>
+### ☁️ Cloud / VPS
 
 ```bash
 git clone https://github.com/Fer2809fl/Asta_bot
-```
-```bash
 cd Asta_bot
-```
-```bash
 npm install
-```
-```bash
 npm start
 ```
 
-</details>
-
-<details open>
-<summary><strong>📱 Termux</strong> — Manualmente</summary>
+### 📱 Termux
 
 ```bash
+# Actualizar paquetes
 termux-setup-storage
 pkg update -y && pkg upgrade -y
 pkg install -y git nodejs-lts ffmpeg python make clang sqlite
-```
-```bash
+
+# Clonar repositorio
 git clone https://github.com/Fer2809fl/Asta_bot
-```
-```bash
 cd Asta_bot
 ```
 
-**Antes de instalar, define estas dos variables de entorno** (evitan los errores más comunes de Termux al compilar módulos nativos como `sqlite3` y al resolver `ffmpeg`):
+**Variables de entorno (evitan errores de compilación):**
 
 ```bash
 export GYP_DEFINES="android_ndk_path=''"
 export FFMPEG_BIN=$(command -v ffmpeg)
 ```
 
-Para no tener que escribirlas cada vez que abras Termux, agrégalas a tu perfil una sola vez:
+Para no escribirlas cada vez, agrégalas a tu perfil:
 
 ```bash
 echo 'export GYP_DEFINES="android_ndk_path=\x27\x27"' >> ~/.bashrc
@@ -153,65 +130,59 @@ echo 'export FFMPEG_BIN=$(command -v ffmpeg)' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-Ahora sí, instala:
+Instala el bot:
 
 ```bash
 npm install
-```
-```
 npm start
 ```
 
-> *Si aparece **(Y/I/N/O/D/Z) [default=N] ?** usa la letra **"y"** y luego **"ENTER"** para continuar con la instalación.*
+> Si aparece `(Y/I/N/O/D/Z) [default=N] ?` usa la letra **"y"** y luego **ENTER**.
 
-</details>
+---
 
-<details>
-<summary><strong>⏱️ Comandos para mayor tiempo activo</strong></summary>
-
-> *Ejecutar dentro de la carpeta Asta*
+## ◈ Mantener el Bot Activo (24/7)
 
 ```bash
 termux-wake-lock && npm i -g pm2 && pm2 start index.js --name asta_bot && pm2 save && pm2 logs
 ```
 
+### Comandos Útiles de PM2
+
 | Comando | Acción |
 |---|---|
-| `pm2 delete asta_bot` | Eliminar historial de PM2 |
 | `pm2 logs` | Ver ejecución actual |
 | `pm2 stop asta_bot` | Detener ejecución |
 | `pm2 start asta_bot` | Reiniciar ejecución |
+| `pm2 delete asta_bot` | Eliminar historial |
 
-</details>
+### Bot 24/7 Oficial
 
-## ◈ Bot 24/7
+Si buscas un bot 24/7 de Asta Bot, contacta: **[Aquí](https://wa.me/524181450063)**
 
-> si edtas buscando un bot 24/7 de Asta bot solo ve a este número [¡Numero!](https://wa.me/524181450063)**
->  y pon el comando `#code`
-
-</details>
+Usa el comando `#code` en el chat.
 
 ---
 
 ## ◈ Solución de Problemas
 
-### ◆ El bot se detuvo
+### 🔴 El bot se detuvo
 
 ```bash
-cd && cd Asta_bot && npm start
+cd Asta_bot && npm start
 ```
 
-### ◆ Nuevo inicio de sesión
+### 🔴 Nuevo inicio de sesión
 
-> *Detén el bot con `Ctrl` + `Z` + `ENTER` hasta que aparezca `Asta $`*
+> Detén el bot con `Ctrl + Z + ENTER` hasta que aparezca `Asta $`
 
 ```bash
-cd && cd Asta_bot && rm -rf sessions/Owner && npm start
+cd Asta_bot && rm -rf sessions/Owner && npm start
 ```
 
-### ◆ Error al instalar en Termux (`android_ndk_path` / `better-sqlite3` / `sqlite3`)
+### 🔴 Error `android_ndk_path` / `better-sqlite3` / `sqlite3` en Termux
 
-Si `npm install` falla con algo como `Undefined variable android_ndk_path in binding.gyp` o no encuentra un módulo nativo, es porque `node-gyp` intenta usar el NDK de Android para compilar, y Termux no lo tiene. Haz una reinstalación limpia con las variables correctas:
+Si `npm install` falla con errores de compilación nativa:
 
 ```bash
 export GYP_DEFINES="android_ndk_path=''"
@@ -220,9 +191,7 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
-### ◆ Error `ffmpeg-static install failed: No binary found for architecture`
-
-`ffmpeg-static` no reconoce Android como plataforma, así que necesita que le indiques dónde está el `ffmpeg` real de Termux **antes** de instalar:
+### 🔴 Error `ffmpeg-static: No binary found for architecture`
 
 ```bash
 pkg install -y ffmpeg
@@ -233,21 +202,21 @@ npm install
 
 ---
 
-## ◈ Configuración General
+## ◈ Configuración
 
-Edita `config.js` en la raíz del proyecto para personalizar:
+Edita `config.js` en la raíz del proyecto:
 
 - `prefix` — Prefijos de comandos
 - `botname`, `wm`, `logo` — Nombre, marca de agua y logo
 - `owners` — Números de los dueños
-- `ayudantes` — Números autorizados para sugerencias y reportes
+- `ayudantes` — Números autorizados para sugerencias
 
 ---
 
 ## ◈ Colaboradores
 
 <a href="https://github.com/Fer2809fl/Asta_bot">
-  <img src="https://contrib.rocks/image?repo=Fer2809fl/Asta_bot" />
+  <img src="https://contrib.rocks/image?repo=Fer2809fl/Asta_bot" alt="Colaboradores">
 </a>
 
 ---
@@ -263,7 +232,7 @@ Edita `config.js` en la raíz del proyecto para personalizar:
 </p>
 
 <p align="center">
-  <sub>Desarrollador principal de 『𝕬𝖘𝖙𝖆』</sub>
+  <sub>Desarrollador principal de 『𝕬𝖘𝖆』</sub>
 </p>
 
 ---
@@ -272,5 +241,4 @@ Edita `config.js` en la raíz del proyecto para personalizar:
   <sub>𓏸𓈒 Asta-Bot ꨶ〆⁾ — Powered By ғᴇʀɴᴀɴᴅᴏ</sub>
 </p>
 
-> [Nota]
-> Este bot puede ser editado completamente la única condición es dar los créditos a los creadores
+> **Nota:** Este bot puede ser editado completamente. La única condición es dar los créditos a los creadores.
