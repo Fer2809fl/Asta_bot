@@ -1,7 +1,8 @@
 <div align="center">
 
 <!-- BANNER -->
-https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=»»——⍟——«« ⟪ Asta ⟫ Bot »»——⍟——««&fontSize=28&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16
+
+<img src="[https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=%C2%BB%C2%BB%E2%80%94%E2%80%94%E2%8F%9F%E2%80%94%E2%80%94%C2%AB%C2%AB%20%E2%9F%AA%20Asta%20%E2%9F%AB%20Bot%20%C2%BB%C2%BB%E2%80%94%E2%80%94%E2%8F%9F%E2%80%94%E2%80%94%C2%AB%C2%AB&fontSize=28&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16](https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=%C2%BB%C2%BB%E2%80%94%E2%80%94%E2%8F%9F%E2%80%94%E2%80%94%C2%AB%C2%AB%20%E2%9F%AA%20Asta%20%E2%9F%AB%20Bot%20%C2%BB%C2%BB%E2%80%94%E2%80%94%E2%8F%9F%E2%80%94%E2%80%94%C2%AB%C2%AB&fontSize=28&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16)" />
 
 <br>
 
