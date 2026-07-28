@@ -1,38 +1,68 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Fer2809fl/asta-/refs/heads/main/src/database/menu.jpg" alt="『𝕬𝖘𝖆』" style="width: 75%; height: auto; max-width: 100px; border-radius: 10px;">
+<div align="center">
+
+<!-- BANNER -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=%E3%80%8E%F0%9D%95%AC%F0%9D%96%98%F0%9D%96%86%E3%80%8F%20Bot&fontSize=55&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16" />
+
+<br>
+
+<p>
+  <img src="https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
+  <img src="https://img.shields.io/badge/Baileys-Multi--Device-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" />
+  <img src="https://img.shields.io/badge/License-Open%20Source-FFD700?style=for-the-badge" />
 </p>
 
-<p align="center">
-  <a href="https://github.com/Fer2809fl/Asta_bot">
-    <img title="『𝕬𝖘𝖆』" src="https://img.shields.io/badge/¡Disfruta de un Bot totalmente gratuito, con múltiples funciones y de código abierto! -purple?colorA=%239b33b0&colorB=%23ff0000" alt="Badge">
-  </a>
+<p>
+  <img src="https://img.shields.io/badge/IA-ChatGPT%20%7C%20Gemini%20%7C%20Copilot-412991?style=flat-square&logo=openai&logoColor=white" />
+  <img src="https://img.shields.io/badge/Econom%C3%ADa-Trabajo%20%7C%20Miner%C3%ADa%20%7C%20Pesca-10B981?style=flat-square" />
+  <img src="https://img.shields.io/badge/Descargas-YT%20%7C%20TK%20%7C%20IG%20%7C%20FB-FF0000?style=flat-square&logo=youtube&logoColor=white" />
 </p>
 
-<p align="center">
+<br>
 
-[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org)
-[![License](https://img.shields.io/badge/Licencia-GPL-blue)](./LICENSE)
-[![Baileys](https://img.shields.io/badge/Baileys-Multi--Device-25D366?logo=whatsapp&logoColor=white)](https://github.com/Fer2809fl/Baileys)
-[![Stars](https://img.shields.io/github/stars/Fer2809fl/Asta_bot?style=social)](https://github.com/Fer2809fl/Asta_bot)
-
+<p>
+  <b>Bot de WhatsApp multifuncional</b> construido sobre <code>Baileys</code>.
+  <br>
+  Economía, gacha, IA, descargas multimedia, administración de grupos y más.
+  <br>
+  <b>Completamente gratuito y de código abierto.</b>
 </p>
 
----
+<p>
+  <sub>Usa <code>!menu</code> en el chat para ver todos los comandos disponibles.</sub>
+</p>
 
-## ◈ Descripción
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
 
-**『𝕬𝖘𝖆』** es un bot de WhatsApp multifuncional (Multi-Device) basado en `baileys`. Ofrece economía, gacha, IA, descargas, administración de grupos y mucho más, todo en un solo bot completamente gratuito y de código abierto.
+</div>
 
-> **Powered By** ғᴇʀɴᴀɴᴅᴏ
+<br>
 
-Este proyecto está en **constante evolución**. Estamos comprometidos en ofrecer a nuestra comunidad un bot increíble. Te invitamos a instalarlo y estar al tanto de todas las novedades.
+## 📑 Índice
 
----
+- [Características](#-características)
+- [Requisitos](#-requisitos)
+- [Instalación](#-instalación)
+  - [Cloud / VPS](#cloud--vps)
+  - [Termux (Android)](#termux-android)
+- [Mantener Activo 24/7](#-mantener-activo-247)
+- [Configuración](#-configuración)
+- [Solución de Problemas](#-solución-de-problemas)
+- [Equipo](#-equipo)
+- [Enlaces](#-enlaces)
+- [Licencia](#-licencia)
 
-## ◈ Características Principales
+<br>
 
-| Categoría | Comandos Disponibles |
-|---|---|
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
+
+<br>
+
+## ✨ Características
+
+<div align="center">
+
+| Categoría | Descripción |
+|:---------:|:------------|
 | 🧠 **IA** | ChatGPT, Gemini, Copilot, generación de imágenes, texto a voz |
 | 🪙 **Economía** | Trabajo, minería, pesca, apuestas, inversiones |
 | 🎴 **Gacha** | Roll de personajes, harem, intercambios |
@@ -41,148 +71,138 @@ Este proyecto está en **constante evolución**. Estamos comprometidos en ofrece
 | 🎨 **Stickers** | Normales, animados, con fondo removido |
 | 🤖 **Sub-bots** | Vinculación por QR o código, multi-sesión |
 
-> Usa **`!menu`** dentro del chat para ver la lista completa de comandos.
-
----
-
-## ◈ Información General
-
-<div align="center">
-
-| Dato | Valor |
-|---|---|
-| **Prefijos** | `!` `.` `/` |
-| **Nombre** | 『𝕬𝖘𝖆』 |
-| **Icono** | 🤖 |
-| **Marca** | 𓏸𓈒 Asta-Bot ꨶ〆⁾ |
-| **Desarrollador** | Fernando |
-| **Advertencias Máx.** | 3 |
-| **Soporte Total** | 50 |
-
 </div>
 
----
+<br>
 
-## ◈ Equipo
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
 
-### ◆ Propietarios
+<br>
 
-| Contacto | Nombre | Estado |
-|---|---|---|
-| `+52 14183357841` | Fernando | ✅ Activo |
-| `+52 16631079388` | Neykoor | ✅ Activo |
-| `+52 14181450063` | Fernando | ✅ Activo |
+## ⚙️ Requisitos
 
-### ◆ Colaboradores
+| Requisito | Versión Mínima |
+|-----------|----------------|
+| Node.js | 18.x LTS |
+| Git | 2.x |
+| FFmpeg | Última estable |
+| Python | 3.x *(solo Termux)* |
+| SQLite | 3.x |
 
-`+58 4223201386` • `+59 167062252` • `+51 939170057` • `+1 8096521129` • `+59 5981286874` • `+52 17207439397` • `+52 15632332034`
+<br>
 
----
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
 
-## ◈ Enlaces Oficiales
+<br>
 
-<p align="center">
+## 🚀 Instalación
 
-[![Canal](https://img.shields.io/badge/📢_Únete_al_Canal-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://whatsapp.com/channel/0029Vb7uWR9E50UdCUthCR2B)
-[![Grupo](https://img.shields.io/badge/👥_Únete_al_Grupo-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/H6uionZcKu9Hpa0CLDrInn)
-[![Repo](https://img.shields.io/badge/💻_Ver_Repositorio-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Fer2809fl/Asta_bot)
-
-</p>
-
----
-
-## ◈ Instalación
-
-### ☁️ Cloud / VPS
+### Cloud / VPS
 
 ```bash
-git clone https://github.com/Fer2809fl/Asta_bot
+git clone https://github.com/Fer2809fl/Asta_bot.git
 cd Asta_bot
 npm install
 npm start
 ```
 
-### 📱 Termux
+### Termux (Android)
 
 ```bash
-# Actualizar paquetes
+# 1. Preparar entorno
 termux-setup-storage
 pkg update -y && pkg upgrade -y
 pkg install -y git nodejs-lts ffmpeg python make clang sqlite
 
-# Clonar repositorio
-git clone https://github.com/Fer2809fl/Asta_bot
+# 2. Clonar repositorio
+git clone https://github.com/Fer2809fl/Asta_bot.git
 cd Asta_bot
-```
 
-**Variables de entorno (evitan errores de compilación):**
-
-```bash
+# 3. Configurar variables de entorno
 export GYP_DEFINES="android_ndk_path=''"
 export FFMPEG_BIN=$(command -v ffmpeg)
+
+# 4. Instalar dependencias
+npm install
+# Si aparece (Y/I/N/O/D/Z) [default=N] ? → escribe "y" y ENTER
+
+# 5. Iniciar
+npm start
 ```
 
-Para no escribirlas cada vez, agrégalas a tu perfil:
+**Para persistir las variables de entorno:**
 
 ```bash
-echo 'export GYP_DEFINES="android_ndk_path=\x27\x27"' >> ~/.bashrc
+echo 'export GYP_DEFINES="android_ndk_path=''"' >> ~/.bashrc
 echo 'export FFMPEG_BIN=$(command -v ffmpeg)' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-Instala el bot:
+<br>
 
-```bash
-npm install
-npm start
-```
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
 
-> Si aparece `(Y/I/N/O/D/Z) [default=N] ?` usa la letra **"y"** y luego **ENTER**.
+<br>
 
----
-
-## ◈ Mantener el Bot Activo (24/7)
+## 🔄 Mantener Activo 24/7
 
 ```bash
 termux-wake-lock && npm i -g pm2 && pm2 start index.js --name asta_bot && pm2 save && pm2 logs
 ```
 
-### Comandos Útiles de PM2
+### Comandos útiles de PM2
 
 | Comando | Acción |
-|---|---|
-| `pm2 logs` | Ver ejecución actual |
-| `pm2 stop asta_bot` | Detener ejecución |
-| `pm2 start asta_bot` | Reiniciar ejecución |
-| `pm2 delete asta_bot` | Eliminar historial |
+|---------|--------|
+| `pm2 logs` | Ver ejecución en tiempo real |
+| `pm2 stop asta_bot` | Detener el bot |
+| `pm2 start asta_bot` | Reiniciar el bot |
+| `pm2 restart asta_bot` | Reinicio forzado |
+| `pm2 delete asta_bot` | Eliminar proceso |
+| `pm2 monit` | Monitor interactivo |
 
-### Bot 24/7 Oficial
+<br>
 
-Si buscas un bot 24/7 de Asta Bot, contacta: **[Aquí](https://wa.me/524181450063)**
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
 
-Usa el comando `#code` en el chat.
+<br>
 
----
+## 🔧 Configuración
 
-## ◈ Solución de Problemas
+Edita `config.js` en la raíz del proyecto:
 
-### 🔴 El bot se detuvo
+| Opción | Descripción |
+|--------|-------------|
+| `prefix` | Prefijos de comandos (`!` `.` `/`) |
+| `botname` | Nombre del bot |
+| `wm` | Marca de agua |
+| `logo` | Logo del bot |
+| `owners` | Números de los propietarios |
+| `ayudantes` | Números autorizados para sugerencias |
+
+<br>
+
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
+
+<br>
+
+## 🛠️ Solución de Problemas
+
+### El bot se detuvo
 
 ```bash
 cd Asta_bot && npm start
 ```
 
-### 🔴 Nuevo inicio de sesión
+### Nuevo inicio de sesión (sesión corrupta)
 
-> Detén el bot con `Ctrl + Z + ENTER` hasta que aparezca `Asta $`
+> Detén el bot con `Ctrl + Z` luego `ENTER` hasta que aparezca `Asta $`
 
 ```bash
 cd Asta_bot && rm -rf sessions/Owner && npm start
 ```
 
-### 🔴 Error `android_ndk_path` / `better-sqlite3` / `sqlite3` en Termux
-
-Si `npm install` falla con errores de compilación nativa:
+### Error `android_ndk_path` / `better-sqlite3` / `sqlite3` en Termux
 
 ```bash
 export GYP_DEFINES="android_ndk_path=''"
@@ -191,7 +211,7 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
-### 🔴 Error `ffmpeg-static: No binary found for architecture`
+### Error `ffmpeg-static: No binary found for architecture`
 
 ```bash
 pkg install -y ffmpeg
@@ -200,45 +220,65 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
----
+<br>
 
-## ◈ Configuración
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
 
-Edita `config.js` en la raíz del proyecto:
+<br>
 
-- `prefix` — Prefijos de comandos
-- `botname`, `wm`, `logo` — Nombre, marca de agua y logo
-- `owners` — Números de los dueños
-- `ayudantes` — Números autorizados para sugerencias
+## 👥 Equipo
 
----
+### Propietarios
 
-## ◈ Colaboradores
+| Nombre | Rol | Estado |
+|--------|-----|:------:|
+| **Fernando** | Creador & Desarrollador Principal | ✅ Activo |
+| **Neykoor** | Co-Propietario | ✅ Activo |
 
-<a href="https://github.com/Fer2809fl/Asta_bot">
-  <img src="https://contrib.rocks/image?repo=Fer2809fl/Asta_bot" alt="Colaboradores">
-</a>
+### Colaboradores
 
----
+Gracias a todos los que han contribuido al proyecto. Si deseas colaborar, abre un [Pull Request](https://github.com/Fer2809fl/Asta_bot/pulls) o contacta a los propietarios.
 
-## ◈ Creador
+<br>
 
-<p align="center">
-  <img src="https://github.com/Fer2809fl.png" alt="Fernando" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #9b33b0;">
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
+
+<br>
+
+## 🔗 Enlaces
+
+- [📦 Repositorio](https://github.com/Fer2809fl/Asta_bot)
+- [🐛 Reportar Bug](https://github.com/Fer2809fl/Asta_bot/issues)
+- [🔃 Pull Request](https://github.com/Fer2809fl/Asta_bot/pulls)
+
+<br>
+
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
+
+<br>
+
+## 📄 Licencia
+
+Este proyecto se distribuye bajo una licencia de código abierto. Puedes editarlo completamente siempre que des créditos a los creadores originales.
+
+<div align="center">
+
+<br>
+
+**『𝕬𝖘𝖆』** — Powered By ғᴇʀɴᴀɴᴅᴏ
+
+𓏸𓈒 Asta-Bot ꨶ〆⁾
+
+<br>
+
+<p>
+  <a href="https://github.com/Fer2809fl/Asta_bot">⭐ Star en GitHub</a> •
+  <a href="https://github.com/Fer2809fl/Asta_bot/issues">🐛 Reportar Bug</a> •
+  <a href="https://github.com/Fer2809fl/Asta_bot/pulls">🔃 Pull Request</a>
 </p>
 
-<p align="center">
-  <strong style="font-size: 1.5em;">Fernando</strong>
-</p>
+<br>
 
-<p align="center">
-  <sub>Desarrollador principal de 『𝕬𝖘𝖆』</sub>
-</p>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=100&section=footer&animation=fadeIn" />
 
----
-
-<p align="center">
-  <sub>𓏸𓈒 Asta-Bot ꨶ〆⁾ — Powered By ғᴇʀɴᴀɴᴅᴏ</sub>
-</p>
-
-> **Nota:** Este bot puede ser editado completamente. La única condición es dar los créditos a los creadores.
+</div>
