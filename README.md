@@ -2,7 +2,7 @@
 
 <!-- BANNER -->
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=『Asta』%20Bot&fontFamily=UnifrakturMaguntia&fontSize=50&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=『𝕬𝖘𝖙𝖆』%20Bot&fontFamily=UnifrakturMaguntia&fontSize=50&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16" />
 
 <br>
 
@@ -267,7 +267,7 @@ Este proyecto se distribuye bajo una licencia de código abierto. Puedes editarl
 
 <br>
 
-**『𝕬𝖘𝖆』** — Powered By ғᴇʀɴᴀɴᴅᴏ
+**『𝕬𝖘𝖙𝖆』** — Powered By ғᴇʀɴᴀɴᴅᴏ
 
 𓏸𓈒 Asta-Bot ꨶ〆⁾
 
