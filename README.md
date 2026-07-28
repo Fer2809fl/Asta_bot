@@ -2,8 +2,7 @@
 
 <!-- BANNER -->
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=%3E%3E--*%2D-%3C%3C%20%5B%5B%20Asta%20%5D%5D%20Bot%20%3E%3E--*%2D-%3C%3C&fontSize=30&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16" />
-
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=%C2%BB%C2%BB%E2%80%94%E2%80%94%E2%8F%9F%E2%80%94%E2%80%94%C2%AB%C2%AB%20%E2%9F%AA%20Asta%20%E2%9F%AB%20Bot%20%C2%BB%C2%BB%E2%80%94%E2%80%94%E2%8F%9F%E2%80%94%E2%80%94%C2%AB%C2%AB&fontSize=22&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16" />
 
 <br>
 
