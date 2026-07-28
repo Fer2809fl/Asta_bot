@@ -2,8 +2,8 @@
 
 <!-- BANNER -->
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=%E3%80%8E%F0%9D%95%AC%F0%9D%96%98%F0%9D%96%86%E3%80%8F%20%F0%9D%95%B7%F0%9D%96%94%F0%9D%96%99&fontSize=50&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16" />
-
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=『Asta』%20Bot&fontFamily=UnifrakturMaguntia&fontSize=50&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,10,20&height=180&section=header&text=%E3%80%8E%F0%9D%95%AC%F0%9D%96%98%F0%9D%96%86%E3%80%8F%20%F0%9D%95%B0%F0%9D%96%92%F0%9D%96%99&fontSize=50&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=WhatsApp%20Multi-Device%20%7C%20Econom%C3%ADa%20%2B%20Gacha%20%2B%20IA%20%2B%20Descargas&descAlignY=58&descSize=16" />
 
 <br>
 
