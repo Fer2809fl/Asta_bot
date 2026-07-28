@@ -234,6 +234,7 @@ npm install
 |--------|-----|:------:|
 | **Fernando** | Creador & Desarrollador Principal | ✅ Activo |
 | **Neykoor** | Co-Propietario | ✅ Activo |
+| **Orion'Wolf**|Co-Propietario| 🛜 Semi-Activo|
 
 ### Colaboradores
 
