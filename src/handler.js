@@ -1,4 +1,4 @@
-import { adminManager } from "./adminManager.js";
+import { incrementCommand, registerCommands } from "./commandStats.js";\nimport { adminManager } from "./adminManager.js";
 import { printMessage } from "./print.js";
 import { jidToNumber, normalizeJid, addAllForms } from "./jid.js";
 import { warns, getTarget } from "./group.js";
