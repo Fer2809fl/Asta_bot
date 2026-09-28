@@ -5,7 +5,10 @@ import fetch from 'node-fetch'
 import { downloadContentFromMessage } from '@fer2809fl/baileys'
 import ffmpegPath from 'ffmpeg-static'
 
-const FFMPEG_PATH = ffmpegPath || 'ffmpeg'
+// FFmpeg robusto: usa ffmpeg-static solo si su binario existe y es ejecutable.
+// Si no existe (por ejemplo, en Docker/hosting), usa FFMPEG_BIN o el ffmpeg del PATH.
+const staticFfmpeg = typeof ffmpegPath === 'string' && fs.existsSync(ffmpegPath) ? ffmpegPath : null
+const FFMPEG_PATH = process.env.FFMPEG_BIN || staticFfmpeg || 'ffmpeg'
 const tmpDir = path.resolve(process.cwd(), 'tmp')
 if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true })
 
