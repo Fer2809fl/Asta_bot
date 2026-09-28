@@ -177,6 +177,7 @@ export function createHandler(sock, plugins) {
       commandMap.set(cmd.toLowerCase(), plugin);
     }
   }
+  registerCommands([...commandMap.keys()]);
   if (!sock._groupEventsAttached) {
     handleGroupEvents(sock);
     sock._groupEventsAttached = true;
