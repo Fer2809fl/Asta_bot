@@ -535,6 +535,7 @@ export function createHandler(sock, plugins) {
       };
       try {
         await plugin.execute(ctx);
+        incrementCommand(command);
       } catch (err) {
         console.error(`[Handler] Error en "${command}":`, err.message);
         await reply("❌ Error al ejecutar el comando.");
