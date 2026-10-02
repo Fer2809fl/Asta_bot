@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server"; import {readKey} from "../../../lib/guard";
+export async function GET(request){const auth=await readKey(request);return NextResponse.json({success:true,name:"Asta",private:true})}
