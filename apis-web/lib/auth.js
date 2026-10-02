@@ -1,0 +1,11 @@
+import {SignJWT,jwtVerify} from "jose"; import bcrypt from "bcryptjs"; import {cookies} from "next/headers"; import {findUserById,publicUser} from "./store";
+const COOKIE="asta_session",WEEK=60*60*24*7;
+function secret(){return new TextEncoder().encode(process.env.AUTH_SECRET||"asta-apis-dev-secret-cambia-en-produccion")}
+export async function hashPassword(p){return bcrypt.hash(p,12)} export async function checkPassword(p,h){return bcrypt.compare(p,h)}
+export async function signSession(userId){return new SignJWT({sub:userId}).setProtectedHeader({alg:"HS256"}).setIssuedAt().setExpirationTime("7d").sign(secret())}
+export function sessionCookie(token){return{name:COOKIE,value:token,options:{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production",path:"/",maxAge:WEEK}}}
+export function clearCookie(){return{name:COOKIE,value:"",options:{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production",path:"/",maxAge:0}}}
+export async function currentUser(){const token=cookies().get(COOKIE)?.value;if(!token)return null;try{const{payload}=await jwtVerify(token,secret());if(!payload.sub)return null;return publicUser(await findUserById(String(payload.sub)))}catch{return null}}
+const attempts=new Map(); export function tooManyAttempts(key){const now=Date.now(),list=(attempts.get(key)||[]).filter(t=>now-t<9e5);attempts.set(key,list);return list.length>=8}
+export function markAttempt(key){const now=Date.now(),list=(attempts.get(key)||[]).filter(t=>now-t<9e5);list.push(now);attempts.set(key,list)} export function clearAttempts(key){attempts.delete(key)}
+export function validateRegister({username,email,password}){const n=String(username||"").trim(),m=String(email||"").trim().toLowerCase(),p=String(password||"");if(!/^[a-zA-Z0-9_]{3,20}$/.test(n))return"El usuario debe tener 3 a 20 letras, números o _.";if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m))return"Escribe un correo válido.";if(p.length<8)return"La contraseña debe tener al menos 8 caracteres.";if(!/[A-Za-z]/.test(p)||!/[0-9]/.test(p))return"La contraseña necesita letras y números.";return null}
